@@ -21,27 +21,38 @@
 
 //=== Project header files
 #include "can.h"
+#include "spi_header.h"
+
+/*
+reg_addrs addr_init
+{
+    no_op = 0x0000;       // No operation
+    err  = 0x0001;       // Error register
+    program      = 0x0003;       // Programming register
+    diag         = 0x3FFC;       // Diagnostic and AGC   
+    magnitude    = 0x3FFD;       // CORDIC Magnitude
+    angl_no_err  = 0x3FFE;       // Measured angle with no error compensation.
+    angl_err     = 0x3FFF;       // Measured angle with error compensation.
+    z_pos_msb    = 0x0016;       // Zero position msb.
+    z_pos_lsb    = 0x0017;       // Zero position lsb.
+    settings_1   = 0x0018;       // Custom settings register 1
+    settings_2   = 0x0019;       // Custom settings register 2
+}
+*/
+
+
+
 
 /*
  * Maximum speed SPI configuration (21MHz, CPHA=0, CPOL=0, MSb first).
  */
-/*
-static const SPIConfig hs_spicfg = {
-    0,
-  NULL,         // SPI operation complete callback
-  NULL,         // Chip select line port
-  GPIOA,
-  4,            // Chip select pad number
-  0,            // SPI initialization data.
-};
-*/
-static const SPIConfig hs_spicfg = {
-    false,          // Enables circular buffer if == 1
-    NULL,       // Operation complete call back.
-    GPIOA,          // Chip select line
-    GPIOA_SPI1_NSS,      // Chip select port
-    SPI_CR1_BR_1 | SPI_CR1_BR_2,
-    0,            // Chip select port mask
+static const SPIConfig spicfg = {
+    false,              // Enables circular buffer if == 1
+    NULL,               // Operation complete call back.
+    GPIOA,              // Chip select line
+    GPIOA_SPI1_NSS,     // Chip select port
+    SPI_CR1_BR_1 | SPI_CR1_BR_0,
+    0,                  // Chip select port mask
 };
 
 /*
@@ -52,14 +63,14 @@ static const SPIConfig ls_spicfg = {
   NULL,
   GPIOA,
   GPIOA_SPI1_NSS,
-  SPI_CR1_BR_2 | SPI_CR1_BR_1,
+  SPI_CR1_SPE | SPI_CR1_MSTR | SPI_CR1_BR_2 | SPI_CR1_BR_1,
   0
 };
 
 /*
  * SPI TX and RX buffers.
  */
-static uint8_t txbuf[512];
+static uint8_t txbuf[2];
 static uint8_t rxbuf[512];
 
 //=== Serial configuration
@@ -79,18 +90,22 @@ static THD_FUNCTION(spi_thread_1, arg) {
 
   (void)arg;
   chRegSetThreadName("SPI thread 1");
+  int addr = 0x3FFF;
+  int newval = 1;
 
-  while (true) {
+  rxbuf[0] = 0;
+        //palClearLine(LINE_LED_GREEN);
+
+
+  //while (true) {
       
-    spiAcquireBus(&SPID1);              /* Acquire ownership of the bus.    */
-    palSetPad(GPIOD, GPIOD_PIN5);       // *****WE CHOOSE THIS**********************
-    spiStart(&SPID1, &hs_spicfg);       /* Setup transfer parameters.       */
-    spiSelect(&SPID1);                  /* Slave Select assertion.          */
-    spiExchange(&SPID1, 512,
-               txbuf, rxbuf);          /* Atomic transfer operations.      */
-    spiUnselect(&SPID1);                /* Slave Select de-assertion.       */
-    spiReleaseBus(&SPID1);              /* Ownership release.               */
-  }
+//    spi_read_reg(&SPID1, addr);
+//    spiPolledExchange
+    //spi_write_reg(&SPID1, addr, newval);
+//    spiStartReceive
+
+    //spiReleaseBus(&SPID1);              /* Ownership release.               */
+  //}
 }
 
 /*
@@ -99,71 +114,58 @@ static THD_FUNCTION(spi_thread_1, arg) {
 
  */
 
-static THD_WORKING_AREA(spi_thread_2_wa, 256);
-static THD_FUNCTION(spi_thread_2, p) {
-
-  (void)p;
-  chRegSetThreadName("SPI thread 2");
-  while (true) {
-    spiAcquireBus(&SPID1);              /* Acquire ownership of the bus.    */
-    palClearPad(GPIOD, GPIOD_PIN5);     // *****WE CHOOSE THIS**********************
-    spiStart(&SPID1, &ls_spicfg);       /* Setup transfer parameters.       */
-    spiSelect(&SPID1);                  /* Slave Select assertion.          */
-    spiExchange(&SPID1, 512,
-                txbuf, rxbuf);          /* Atomic transfer operations.      */
-    spiUnselect(&SPID1);                /* Slave Select de-assertion.       */
-    spiReleaseBus(&SPID1);              /* Ownership release.               */
-    
-  }
-}
-
-
-
 static void app_init(void) {
     //=== App initialization
- /*
-   * SPI2 I/O pins setup.
-   */
-    
-  //palSetPadMode(GPIOA, 5, PAL_MODE_ALTERNATE(5) |
-  //                         PAL_STM32_OSPEED_HIGHEST);       /* New SCK.     */
 
-  //palSetPadMode(GPIOA, 6, PAL_MODE_ALTERNATE(5) |
-  //                         PAL_STM32_OSPEED_HIGHEST);       /* New MISO.    */
 
-  //palSetPadMode(GPIOA, 7, PAL_MODE_ALTERNATE(5) |
-  //                         PAL_STM32_OSPEED_HIGHEST);       /* New MOSI.    */
-
-//  palSetPadMode(GPIOA, 4, PAL_MODE_OUTPUT_PUSHPULL |
- //                          PAL_STM32_OSPEED_HIGHEST);       /* New CS.      */
-
-//  palSetPad(GPIOA, 4);
-  
     // Start up debug output
     sdStart(&SD2, &ser_cfg);
+    
+
+    spiStart(&SPID1, &spicfg);
 
 }
+
+static void start_threads(void)
+{
+  /*
+   * Starting the transmitter and receiver threads.
+   */
+
+    chThdCreateStatic(spi_thread_1_wa, sizeof(spi_thread_1_wa),
+                    NORMALPRIO + 1, spi_thread_1, NULL);
+
+
+
+}
+
+static void tx_init(void)
+{
+
+  int addr = 0x3FFF;
+  int newval = 1;
+
+    spi_write(&SPID1, addr,txbuf, newval);
+
+}
+
 
 static void main_app(void) {
     //=== Start application threads
     unsigned i;
 
+    chThdSleepMilliseconds(500);
+
     /*
-     * Prepare transmit pattern.
+     * Prepare transmit pattern
      */
-    for(i=0; i < sizeof(txbuf); i++)
+     for(i=0; i < sizeof(txbuf); i++)
         txbuf[i] = (uint8_t)i;
 
 
+    tx_init();
 
-     /*
-   * Starting the transmitter and receiver threads.
-   */
-  chThdCreateStatic(spi_thread_1_wa, sizeof(spi_thread_1_wa),
-                    NORMALPRIO + 1, spi_thread_1, NULL);
 
-  chThdCreateStatic(spi_thread_2_wa, sizeof(spi_thread_2_wa),
-                    NORMALPRIO + 1, spi_thread_2, NULL);
     /*
      * Begin main loop
      */
@@ -183,16 +185,64 @@ int main(void) {
      */
     halInit();
     chSysInit();
-    // Initialize CAN Subsystem
-    can_init();
-    // Start CAN threads
-    can_start();
 
     // Initialize and start app
     app_init();
+
+    start_threads();
+
     main_app();
 
     return 0;
+}
+
+void spi_read(SPIDriver * spip, int address, uint8_t * rx_buf, uint8_t n)
+{
+    spiSelect(spip);
+    spiStartSend(spip,1,&address);
+    while((*spip).state != SPI_READY) {}
+
+
+    spiStartReceive(spip,n,rx_buf);
+    while((*spip).state != SPI_READY) {}
+
+    spiUnselect(spip);   
+
+
+}
+
+uint8_t spi_read_reg(SPIDriver *spip, int address)
+{
+
+    spi_read(spip,address,rxbuf,8);
+
+    return(rxbuf[0]);    
+
+    
+}
+
+void spi_write(SPIDriver * spip, uint8_t address, uint8_t * tx_buf, uint8_t n)
+{
+
+    spiSelect(spip);
+
+    spiStartSend(spip,1,&address);
+    while((*spip).state != SPI_READY) {}
+
+    spiStartSend(spip,n,txbuf);
+    while((*spip).state != SPI_READY) {}
+
+    spiUnselect(spip);
+
+
+}
+
+
+void spi_write_reg(SPIDriver *spip, uint8_t address, uint8_t newval)
+{
+    txbuf[0] = newval;
+    spi_write(spip,address, txbuf,1);
+
 }
 
 //! @}
