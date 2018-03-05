@@ -30,16 +30,16 @@ struct reg_addrs
 
 
 // sx1236_read
-void spi_read(SPIDriver * spip, int address, uint8_t * rx_buf, uint8_t n);
+void spi_read(SPIDriver * spip, int address, int * rx_buf, int n);
 
 // write
-void spi_write(SPIDriver * spip, uint8_t address, uint8_t * tx_buf, uint8_t n);
+void spi_write(SPIDriver * spip, int address, int * tx_buf, int n);
 
 // sx1236_read reg
 uint8_t spi_read_reg(SPIDriver *spip, int address);
 
 // write reg
-void spi_write_reg(SPIDriver *spip, uint8_t address, uint8_t newval);
+void spi_write_reg(SPIDriver *spip, int address, int newval);
 
 
 

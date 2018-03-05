@@ -51,7 +51,8 @@ static const SPIConfig spicfg = {
     NULL,               // Operation complete call back.
     GPIOA,              // Chip select line
     GPIOA_SPI1_NSS,     // Chip select port
-    SPI_CR1_BR_1 | SPI_CR1_BR_0,
+    //SPI_CR1_BR_1 | SPI_CR1_BR_0,
+    SPI_CR1_BR_0,
     0,                  // Chip select port mask
 };
 
@@ -70,8 +71,8 @@ static const SPIConfig ls_spicfg = {
 /*
  * SPI TX and RX buffers.
  */
-static uint8_t txbuf[2];
-static uint8_t rxbuf[512];
+static int txbuf[1024];
+static int rxbuf[14];
 
 //=== Serial configuration
 static SerialConfig ser_cfg =
@@ -90,29 +91,29 @@ static THD_FUNCTION(spi_thread_1, arg) {
 
   (void)arg;
   chRegSetThreadName("SPI thread 1");
-  int addr = 0x3FFF;
+  int address = 0x3FFF;
   int newval = 1;
 
-  rxbuf[0] = 0;
-        //palClearLine(LINE_LED_GREEN);
+  spiStart(&SPID1, &spicfg);
+  
 
+  while(true)
+  {
+    
+      spiSelect(&SPID1);        // Lower chip select
 
-  //while (true) {
-      
-//    spi_read_reg(&SPID1, addr);
-//    spiPolledExchange
-    //spi_write_reg(&SPID1, addr, newval);
-//    spiStartReceive
+//      spiSend(&SPID1,512,&txbuf); // Transmitting one word.
+      spi_write(&SPID1,address,txbuf,sizeof(txbuf));
 
-    //spiReleaseBus(&SPID1);              /* Ownership release.               */
-  //}
+      spiUnselect(&SPID1);      // Raising chip select
+
+      chThdSleepMilliseconds(1000);
+
+  }
+
+  //spiStop(&SPID1);
+
 }
-
-/*
-
- * SPI bus contender 2.
-
- */
 
 static void app_init(void) {
     //=== App initialization
@@ -121,9 +122,6 @@ static void app_init(void) {
     // Start up debug output
     sdStart(&SD2, &ser_cfg);
     
-
-    spiStart(&SPID1, &spicfg);
-
 }
 
 static void start_threads(void)
@@ -139,13 +137,13 @@ static void start_threads(void)
 
 }
 
-static void tx_init(void)
+static void transmit_func(void)
 {
 
   int addr = 0x3FFF;
   int newval = 1;
 
-    spi_write(&SPID1, addr,txbuf, newval);
+    //spi_write(&SPID1, addr,txbuf, newval);
 
 }
 
@@ -163,14 +161,12 @@ static void main_app(void) {
         txbuf[i] = (uint8_t)i;
 
 
-    tx_init();
-
-
     /*
      * Begin main loop
      */
     while (true)
     {
+
         chThdSleepMilliseconds(1000);
     }
 }
@@ -191,12 +187,12 @@ int main(void) {
 
     start_threads();
 
-    main_app();
+    //main_app();
 
     return 0;
 }
 
-void spi_read(SPIDriver * spip, int address, uint8_t * rx_buf, uint8_t n)
+void spi_read(SPIDriver * spip, int address, int * rx_buf, int n)
 {
     spiSelect(spip);
     spiStartSend(spip,1,&address);
@@ -221,24 +217,26 @@ uint8_t spi_read_reg(SPIDriver *spip, int address)
     
 }
 
-void spi_write(SPIDriver * spip, uint8_t address, uint8_t * tx_buf, uint8_t n)
+void spi_write(SPIDriver * spip, int address, int * tx_buf, int n)
 {
 
-    spiSelect(spip);
+    //spiSelect(spip);
 
-    spiStartSend(spip,1,&address);
-    while((*spip).state != SPI_READY) {}
+    //spiStartSend(spip,1,&address);
+    spiSend(spip,1,&address); // Transmitting one word.
+    //while((*spip).state != SPI_READY) {}
 
-    spiStartSend(spip,n,txbuf);
-    while((*spip).state != SPI_READY) {}
+    //spiStartSend(spip,n,txbuf);
+    spiSend(spip,n,txbuf);    // Transmitting entire transfer buffer.
+    //while((*spip).state != SPI_READY) {}
 
-    spiUnselect(spip);
+    //spiUnselect(spip);
 
 
 }
 
 
-void spi_write_reg(SPIDriver *spip, uint8_t address, uint8_t newval)
+void spi_write_reg(SPIDriver *spip, int address, int newval)
 {
     txbuf[0] = newval;
     spi_write(spip,address, txbuf,1);
