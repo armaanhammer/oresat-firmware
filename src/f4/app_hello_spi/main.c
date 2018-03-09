@@ -44,7 +44,7 @@ reg_addrs addr_init
 
 
 /*
- * Maximum speed SPI configuration (21MHz, CPHA=0, CPOL=0, MSb first).
+ * Maximum speed SPI configuration (21MHz, CPHA=1, CPOL=0, MSb first).
  */
 static const SPIConfig spicfg = {
     false,              // Enables circular buffer if == 1
@@ -52,7 +52,7 @@ static const SPIConfig spicfg = {
     GPIOA,              // Chip select line
     GPIOA_SPI1_NSS,     // Chip select port
     //SPI_CR1_BR_1 | SPI_CR1_BR_0,
-    SPI_CR1_BR_0,
+    SPI_CR1_SPE | SPI_CR1_BR_0 | SPI_CR1_BR_1 | SPI_CR1_BR_2| SPI_CR1_CPHA,
     0,                  // Chip select port mask
 };
 
@@ -94,24 +94,25 @@ static THD_FUNCTION(spi_thread_1, arg) {
   int address = 0x3FFF;
   int newval = 1;
 
-  spiStart(&SPID1, &spicfg);
   
-
-  while(true)
-  {
-    
-      spiSelect(&SPID1);        // Lower chip select
-
-//      spiSend(&SPID1,512,&txbuf); // Transmitting one word.
+  //while(true)
+  //{
+      spiAcquireBus(&SPID1);
+      spiStart(&SPID1, &spicfg);
       spi_write(&SPID1,address,txbuf,sizeof(txbuf));
-
-      spiUnselect(&SPID1);      // Raising chip select
+      spiReleaseBus(&SPID1);
 
       chThdSleepMilliseconds(1000);
+      //spiStop(&SPID1);
+      
 
-  }
+      spiAcquireBus(&SPID1);
+      spiStart(&SPID1, &spicfg);
 
-  //spiStop(&SPID1);
+  //}
+  
+        
+
 
 }
 
@@ -219,8 +220,7 @@ uint8_t spi_read_reg(SPIDriver *spip, int address)
 
 void spi_write(SPIDriver * spip, int address, int * tx_buf, int n)
 {
-
-    //spiSelect(spip);
+    spiSelect(spip);
 
     //spiStartSend(spip,1,&address);
     spiSend(spip,1,&address); // Transmitting one word.
@@ -230,8 +230,7 @@ void spi_write(SPIDriver * spip, int address, int * tx_buf, int n)
     spiSend(spip,n,txbuf);    // Transmitting entire transfer buffer.
     //while((*spip).state != SPI_READY) {}
 
-    //spiUnselect(spip);
-
+    spiUnselect(spip);
 
 }
 
