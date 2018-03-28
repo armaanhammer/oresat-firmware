@@ -9,37 +9,19 @@
 #define SETTING_1 0x89
 #define SETTING_2 0x03
 
-uint8_t       sx_txbuff[8];
-uint8_t       sx_rxbuff[8];
-
-struct reg_addrs
-{
-    int no_op;       // No operation
-    int err;       // Error register
-    int program;       // Programming register
-    int diag;       // Diagnostic and AGC
-    int magnitude;       // CORDIC Magnitude
-    int angl_no_err;       // Measured angle with no error compensation.
-    int angl_err;       // Measured angle with error compensation.
-    int z_pos_msb;       // Zero position msb.
-    int z_pos_lsb;       // Zero position lsb.
-    int settings_1;       // Custom settings register 1
-    int settings_2;       // Custom settings register 2
-};
-
 
 
 // sx1236_read
-void spi_read(SPIDriver * spip, int address, int * rx_buf, int n);
+void spi_read(SPIDriver * spip, uint16_t address, uint16_t * rx_buf, int n);
 
 // write
-void spi_write(SPIDriver * spip, int address, int * tx_buf, int n);
+void spi_write(SPIDriver * spip, uint16_t address, uint16_t * tx_buf, int n);
 
 // sx1236_read reg
-uint8_t spi_read_reg(SPIDriver *spip, int address);
+uint8_t spi_read_reg(SPIDriver *spip, uint16_t address);
 
 // write reg
-void spi_write_reg(SPIDriver *spip, int address, int newval);
+void spi_write_reg(SPIDriver *spip, uint16_t address, int newval);
 
 
 

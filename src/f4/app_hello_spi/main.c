@@ -23,23 +23,22 @@
 #include "can.h"
 #include "spi_header.h"
 
-/*
-reg_addrs addr_init
-{
-    no_op = 0x0000;       // No operation
-    err  = 0x0001;       // Error register
-    program      = 0x0003;       // Programming register
-    diag         = 0x3FFC;       // Diagnostic and AGC   
-    magnitude    = 0x3FFD;       // CORDIC Magnitude
-    angl_no_err  = 0x3FFE;       // Measured angle with no error compensation.
-    angl_err     = 0x3FFF;       // Measured angle with error compensation.
-    z_pos_msb    = 0x0016;       // Zero position msb.
-    z_pos_lsb    = 0x0017;       // Zero position lsb.
-    settings_1   = 0x0018;       // Custom settings register 1
-    settings_2   = 0x0019;       // Custom settings register 2
-}
-*/
+#define DEBUG_SERIAL SD2
+#define DEBUG_CHP ((BaseSequentialStream *) &DEBUG_SERIAL)
 
+/*
+no_op = 0x0000;       // No operation
+err  = 0x0001;       // Error register
+program      = 0x0003;       // Programming register
+diag         = 0x3FFC;       // Diagnostic and AGC   
+magnitude    = 0x3FFD;       // CORDIC Magnitude
+angl_no_err  = 0x3FFE;       // Measured angle with no error compensation.
+angl_err     = 0x3FFF;       // Measured angle with error compensation.
+z_pos_msb    = 0x0016;       // Zero position msb.
+z_pos_lsb    = 0x0017;       // Zero position lsb.
+settings_1   = 0x0018;       // Custom settings register 1
+settings_2   = 0x0019;       // Custom settings register 2
+*/
 
 
 
@@ -51,28 +50,16 @@ static const SPIConfig spicfg = {
     NULL,               // Operation complete call back.
     GPIOA,              // Chip select line
     GPIOA_SPI1_NSS,     // Chip select port
-    //SPI_CR1_BR_1 | SPI_CR1_BR_0,
     SPI_CR1_SPE | SPI_CR1_BR_0 | SPI_CR1_BR_1 | SPI_CR1_BR_2| SPI_CR1_CPHA,
     0,                  // Chip select port mask
 };
 
 /*
- * Low speed SPI configuration (328.125kHz, CPHA=0, CPOL=0, MSb first).
- */
-static const SPIConfig ls_spicfg = {
-  false,
-  NULL,
-  GPIOA,
-  GPIOA_SPI1_NSS,
-  SPI_CR1_SPE | SPI_CR1_MSTR | SPI_CR1_BR_2 | SPI_CR1_BR_1,
-  0
-};
-
-/*
  * SPI TX and RX buffers.
+ * Use 16 bit buffers for receive and transmit. 
  */
-static int txbuf[1024];
-static int rxbuf[14];
+static uint16_t txbuf[8];
+static uint16_t rxbuf[8];
 
 //=== Serial configuration
 static SerialConfig ser_cfg =
@@ -90,26 +77,28 @@ static THD_WORKING_AREA(spi_thread_1_wa, 128);
 static THD_FUNCTION(spi_thread_1, arg) {
 
   (void)arg;
+  int i = 0;
   chRegSetThreadName("SPI thread 1");
-  int address = 0x3FFF;
-  int newval = 1;
+  uint16_t address = 0x3FFF;
 
+  int newval = 1;
   
-  //while(true)
-  //{
+ // while(true)
+ // {
       spiAcquireBus(&SPID1);
       spiStart(&SPID1, &spicfg);
-      spi_write(&SPID1,address,txbuf,sizeof(txbuf));
+
+      chprintf(DEBUG_CHP,"Before: %u", (unsigned int) rxbuf[0]);
+      spiReceive(&SPID1,2,rxbuf);       // Receive 2 bytes of data via spi.
+
       spiReleaseBus(&SPID1);
 
       chThdSleepMilliseconds(1000);
       //spiStop(&SPID1);
       
+    chprintf(DEBUG_CHP,"After: %u", (unsigned int) rxbuf[0]);
 
-      spiAcquireBus(&SPID1);
-      spiStart(&SPID1, &spicfg);
-
-  //}
+//  }
   
         
 
@@ -118,7 +107,13 @@ static THD_FUNCTION(spi_thread_1, arg) {
 
 static void app_init(void) {
     //=== App initialization
+    
+    int i;
 
+    for(i = 0; i < 8; ++i)      // Initializing receive buffer to zero. 
+      rxbuf[i] = 0;
+
+    chprintf(DEBUG_CHP,"Init: %u",(unsigned int) rxbuf[0]);
 
     // Start up debug output
     sdStart(&SD2, &ser_cfg);
@@ -138,28 +133,12 @@ static void start_threads(void)
 
 }
 
-static void transmit_func(void)
-{
-
-  int addr = 0x3FFF;
-  int newval = 1;
-
-    //spi_write(&SPID1, addr,txbuf, newval);
-
-}
-
-
 static void main_app(void) {
     //=== Start application threads
     unsigned i;
 
     chThdSleepMilliseconds(500);
 
-    /*
-     * Prepare transmit pattern
-     */
-     for(i=0; i < sizeof(txbuf); i++)
-        txbuf[i] = (uint8_t)i;
 
 
     /*
@@ -182,7 +161,7 @@ int main(void) {
      */
     halInit();
     chSysInit();
-
+  
     // Initialize and start app
     app_init();
 
@@ -193,14 +172,16 @@ int main(void) {
     return 0;
 }
 
-void spi_read(SPIDriver * spip, int address, int * rx_buf, int n)
+void spi_read(SPIDriver * spip, uint16_t address, uint16_t * rx_buf, int n)
 {
     spiSelect(spip);
-    spiStartSend(spip,1,&address);
+    spiSend(spip,1,&address);
+    //spiStartSend(spip,1,&address);
     while((*spip).state != SPI_READY) {}
 
 
-    spiStartReceive(spip,n,rx_buf);
+    //spiStartReceive(spip,n,rx_buf);
+    spiReceive(spip,n,rx_buf);
     while((*spip).state != SPI_READY) {}
 
     spiUnselect(spip);   
@@ -208,17 +189,17 @@ void spi_read(SPIDriver * spip, int address, int * rx_buf, int n)
 
 }
 
-uint8_t spi_read_reg(SPIDriver *spip, int address)
+uint8_t spi_read_reg(SPIDriver *spip, uint16_t address)
 {
 
-    spi_read(spip,address,rxbuf,8);
+    spi_read(spip,address,rxbuf,sizeof(uint16_t));
 
     return(rxbuf[0]);    
 
     
 }
 
-void spi_write(SPIDriver * spip, int address, int * tx_buf, int n)
+void spi_write(SPIDriver * spip, uint16_t address, uint16_t * tx_buf, int n)
 {
     spiSelect(spip);
 
@@ -235,7 +216,7 @@ void spi_write(SPIDriver * spip, int address, int * tx_buf, int n)
 }
 
 
-void spi_write_reg(SPIDriver *spip, int address, int newval)
+void spi_write_reg(SPIDriver *spip, uint16_t address, int newval)
 {
     txbuf[0] = newval;
     spi_write(spip,address, txbuf,1);
