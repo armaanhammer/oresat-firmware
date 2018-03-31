@@ -26,33 +26,42 @@
 #define DEBUG_SERIAL SD2
 #define DEBUG_CHP ((BaseSequentialStream *) &DEBUG_SERIAL)
 
-/*
-no_op = 0x0000;       // No operation
-err  = 0x0001;       // Error register
-program      = 0x0003;       // Programming register
-diag         = 0x3FFC;       // Diagnostic and AGC   
-magnitude    = 0x3FFD;       // CORDIC Magnitude
-angl_no_err  = 0x3FFE;       // Measured angle with no error compensation.
-angl_err     = 0x3FFF;       // Measured angle with error compensation.
-z_pos_msb    = 0x0016;       // Zero position msb.
-z_pos_lsb    = 0x0017;       // Zero position lsb.
-settings_1   = 0x0018;       // Custom settings register 1
-settings_2   = 0x0019;       // Custom settings register 2
-*/
 
-
+static uint16_t no_op = 0x0000;       // No operation
+static uint16_t err  = 0x0001;       // Error register
+static uint16_t program      = 0x0003;       // Programming register
+static uint16_t diag         = 0x3FFC;       // Diagnostic and AGC   
+static uint16_t magnitude    = 0x3FFD;       // CORDIC Magnitude
+static uint16_t angl_no_err  = 0x3FFE;       // Measured angle with no error compensation.
+static uint16_t angl_err     = 0x3FFF;       // Measured angle with error compensation.
+static uint16_t z_pos_msb    = 0x0016;       // Zero position msb.
+static uint16_t z_pos_lsb    = 0x0017;       // Zero position lsb.
+static uint16_t settings_1   = 0x0018;       // Custom settings register 1
+static uint16_t settings_2   = 0x0019;       // Custom settings register 2
 
 /*
  * Maximum speed SPI configuration (21MHz, CPHA=1, CPOL=0, MSb first).
  */
+/*static const SPIConfig spicfg = {
+    false,              // Enables circular buffer if == 1
+    NULL,               // Operation complete call back.
+    GPIOA,              // Chip select line
+    GPIOA_SPI1_NSS,     // Chip select port
+    SPI_CR1_BR_0 | SPI_CR1_BR_1 | 
+    //SPI_CR1_SPE | SPI_CR1_BR_0 | SPI_CR1_BR_1 | 
+    SPI_CR1_BR_2| SPI_CR1_CPHA | SPI_CR1_DFF | SPI_CR1_RXONLY | SPI_CR1_MSTR,
+    0,                  // Chip select port mask
+};*/
 static const SPIConfig spicfg = {
     false,              // Enables circular buffer if == 1
     NULL,               // Operation complete call back.
     GPIOA,              // Chip select line
     GPIOA_SPI1_NSS,     // Chip select port
-    SPI_CR1_SPE | SPI_CR1_BR_0 | SPI_CR1_BR_1 | SPI_CR1_BR_2| SPI_CR1_CPHA,
+    SPI_CR1_SPE | SPI_CR1_BR_1 | SPI_CR1_BR_2 | SPI_CR1_MSTR | SPI_CR1_CPHA, 
+    //SPI_CR1_BR_2| SPI_CR1_CPHA | SPI_CR1_RXONLY | SPI_CR1_MSTR,
     0,                  // Chip select port mask
 };
+
 
 /*
  * SPI TX and RX buffers.
@@ -60,6 +69,8 @@ static const SPIConfig spicfg = {
  */
 static uint16_t txbuf[8];
 static uint16_t rxbuf[8];
+
+static uint8_t rxbuf_2[8];
 
 //=== Serial configuration
 static SerialConfig ser_cfg =
@@ -81,26 +92,29 @@ static THD_FUNCTION(spi_thread_1, arg) {
   chRegSetThreadName("SPI thread 1");
   uint16_t address = 0x3FFF;
 
-  int newval = 1;
   
- // while(true)
- // {
+  while(true)
+  {
       spiAcquireBus(&SPID1);
       spiStart(&SPID1, &spicfg);
+      spiSelect(&SPID1);
 
-      chprintf(DEBUG_CHP,"Before: %u", (unsigned int) rxbuf[0]);
-      spiReceive(&SPID1,2,rxbuf);       // Receive 2 bytes of data via spi.
+      while(SPID1.state != SPI_READY) {}
+      spiReceive(&SPID1,2,rxbuf_2);       // Receive 2 bytes of data via spi.
 
+      spiUnselect(&SPID1);
+
+      chprintf(DEBUG_CHP,"After: %u ", (unsigned int) rxbuf_2[0]);
+      chprintf(DEBUG_CHP,"       %u\n", (unsigned int) rxbuf_2[1]);
+      //chprintf(DEBUG_CHP,"After[2]: %u", (unsigned int) rxbuf[2]);
+
+      spiStop(&SPID1);
       spiReleaseBus(&SPID1);
 
-      chThdSleepMilliseconds(1000);
-      //spiStop(&SPID1);
-      
-    chprintf(DEBUG_CHP,"After: %u", (unsigned int) rxbuf[0]);
+      chThdSleepMilliseconds(50);
 
-//  }
-  
-        
+
+  }
 
 
 }
@@ -112,8 +126,6 @@ static void app_init(void) {
 
     for(i = 0; i < 8; ++i)      // Initializing receive buffer to zero. 
       rxbuf[i] = 0;
-
-    chprintf(DEBUG_CHP,"Init: %u",(unsigned int) rxbuf[0]);
 
     // Start up debug output
     sdStart(&SD2, &ser_cfg);
