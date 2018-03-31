@@ -14,6 +14,18 @@
     limitations under the License.
 */
 
+/*
+ *
+ * Andrew Capatina
+ *
+ * This code reads the value reported from the 
+ * AS5047P encoder. The HW configuration used
+ * is unidirectional SPI.
+ *
+ *
+ */
+
+
 //=== ChibiOS header files
 #include "ch.h"
 #include "hal.h"
@@ -42,22 +54,13 @@ static uint16_t settings_2   = 0x0019;       // Custom settings register 2
 /*
  * Maximum speed SPI configuration (21MHz, CPHA=1, CPOL=0, MSb first).
  */
-/*static const SPIConfig spicfg = {
-    false,              // Enables circular buffer if == 1
-    NULL,               // Operation complete call back.
-    GPIOA,              // Chip select line
-    GPIOA_SPI1_NSS,     // Chip select port
-    SPI_CR1_BR_0 | SPI_CR1_BR_1 | 
-    //SPI_CR1_SPE | SPI_CR1_BR_0 | SPI_CR1_BR_1 | 
-    SPI_CR1_BR_2| SPI_CR1_CPHA | SPI_CR1_DFF | SPI_CR1_RXONLY | SPI_CR1_MSTR,
-    0,                  // Chip select port mask
-};*/
 static const SPIConfig spicfg = {
     false,              // Enables circular buffer if == 1
     NULL,               // Operation complete call back.
     GPIOA,              // Chip select line
     GPIOA_SPI1_NSS,     // Chip select port
-    SPI_CR1_SPE | SPI_CR1_BR_1 | SPI_CR1_BR_2 | SPI_CR1_MSTR | SPI_CR1_CPHA, 
+    // SPE: Enable SPI peripheral / MSTR: Set MCU as master. / CPHA: Second clock phase data is ready / DFF: 16 bit data frames.
+    SPI_CR1_SPE | SPI_CR1_BR_1 | SPI_CR1_BR_2 | SPI_CR1_MSTR | SPI_CR1_CPHA | SPI_CR1_DFF, 
     //SPI_CR1_BR_2| SPI_CR1_CPHA | SPI_CR1_RXONLY | SPI_CR1_MSTR,
     0,                  // Chip select port mask
 };
@@ -70,7 +73,6 @@ static const SPIConfig spicfg = {
 static uint16_t txbuf[8];
 static uint16_t rxbuf[8];
 
-static uint8_t rxbuf_2[8];
 
 //=== Serial configuration
 static SerialConfig ser_cfg =
@@ -88,30 +90,32 @@ static THD_WORKING_AREA(spi_thread_1_wa, 128);
 static THD_FUNCTION(spi_thread_1, arg) {
 
   (void)arg;
-  int i = 0;
   chRegSetThreadName("SPI thread 1");
-  uint16_t address = 0x3FFF;
+  char to_disp[30];
 
   
   while(true)
   {
-      spiAcquireBus(&SPID1);
-      spiStart(&SPID1, &spicfg);
-      spiSelect(&SPID1);
+      rxbuf[0] = 0;
+      spiAcquireBus(&SPID1);                    // Gain ownership of bus.
+      spiStart(&SPID1, &spicfg);                // Start driver.
+      spiSelect(&SPID1);                        // Select slave.
 
-      while(SPID1.state != SPI_READY) {}
-      spiReceive(&SPID1,2,rxbuf_2);       // Receive 2 bytes of data via spi.
+      while(SPID1.state != SPI_READY) {}        // Waiting for driver state to be ready.
+      spiReceive(&SPID1,1,rxbuf);               // Receive 1 frame (16 bits).
 
-      spiUnselect(&SPID1);
+      spiUnselect(&SPID1);                      // Unselect slave.
+    
+      rxbuf[0] = rxbuf[0] & 0x3FFF;             
+      itoa(rxbuf[0],to_disp,2); 
 
-      chprintf(DEBUG_CHP,"After: %u ", (unsigned int) rxbuf_2[0]);
-      chprintf(DEBUG_CHP,"       %u\n", (unsigned int) rxbuf_2[1]);
-      //chprintf(DEBUG_CHP,"After[2]: %u", (unsigned int) rxbuf[2]);
+      // Display results
+      chprintf(DEBUG_CHP,"Binary: %s Decimal: %u \n", to_disp, (unsigned int) rxbuf[0]);        
 
-      spiStop(&SPID1);
-      spiReleaseBus(&SPID1);
+      spiStop(&SPID1);          // Stop driver.
+      spiReleaseBus(&SPID1);    // Release ownership of bus.
 
-      chThdSleepMilliseconds(50);
+      chThdSleepMilliseconds(500);
 
 
   }
@@ -184,6 +188,11 @@ int main(void) {
     return 0;
 }
 
+/*
+ * Following functions are not needed. May be needed if we implement bidirectional comms.
+ *
+ */
+/*-------------------------------------------------------------------------
 void spi_read(SPIDriver * spip, uint16_t address, uint16_t * rx_buf, int n)
 {
     spiSelect(spip);
@@ -234,5 +243,9 @@ void spi_write_reg(SPIDriver *spip, uint16_t address, int newval)
     spi_write(spip,address, txbuf,1);
 
 }
+
+
+----------------------------------------------------------------------------*/
+
 
 //! @}
