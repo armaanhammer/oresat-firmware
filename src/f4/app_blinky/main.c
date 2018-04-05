@@ -39,7 +39,8 @@ static THD_FUNCTION(Thread1, arg) {
   (void)arg;
   chRegSetThreadName("blinker");
 
-  while (!chThdShouldTerminateX()) {
+  //while (!chThdShouldTerminateX()) {
+  while (true) {
     palClearLine(LINE_LED_GREEN);
     chThdSleepMilliseconds(500);
     palSetLine(LINE_LED_GREEN);

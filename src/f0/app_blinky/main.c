@@ -20,6 +20,13 @@
 #include "chprintf.h"
 
 //=== Project header files
+//
+
+
+#define DEBUG_SERIAL SD2
+#define DEBUG_CHP ((BaseSequentialStream *) &DEBUG_SERIAL)
+
+
 
 //=== Serial configuration
 static SerialConfig ser_cfg =
@@ -84,6 +91,7 @@ int main(void) {
 
     // Initialize and start app
     app_init();
+    chprintf(DEBUG_CHP,"HELLO");
     main_app();
 
     return 0;

@@ -54,7 +54,7 @@ static uint16_t settings_2   = 0x0019;       // Custom settings register 2
 
 
 /*
- * Maximum speed SPI configuration (21MHz, CPHA=1, CPOL=0, MSb first).
+ * Maximum speed SPI configuration (10MHz, CPHA=1, CPOL=0, MSb first).
  */
 static const SPIConfig spicfg = {
     false,              // Enables circular buffer if == 1
@@ -62,7 +62,7 @@ static const SPIConfig spicfg = {
     GPIOA,              // Chip select line
     GPIOA_SPI1_NSS,     // Chip select port
     // SPE: Enable SPI peripheral / MSTR: Set MCU as master. / CPHA: Second clock phase data is ready / DFF: 16 bit data frames.
-    SPI_CR1_MSTR | SPI_CR1_BR_1 | SPI_CR1_BR_2 | SPI_CR1_SPE | SPI_CR1_CPHA | SPI_CR1_RXONLY,  //| SPI_CR2_DS_0 | SPI_CR2_DS_1 | SPI_CR2_DS_2 | SPI_CR2_DS_3, 
+    SPI_CR1_MSTR | SPI_CR1_BR_1 | SPI_CR1_BR_2 | SPI_CR1_SPE | SPI_CR1_CPHA | SPI_CR1_RXONLY, 
     0,                  // Chip select port mask
 };
 
@@ -105,7 +105,7 @@ static THD_FUNCTION(spi_thread_1, arg) {
 
       while(SPID1.state != SPI_READY) {}        // Waiting for driver state to be ready.
       //SPI1->CR2 |= 0xE00;
-      SPI1->CR2 |= 0xF00;
+      //SPI1->CR2 |= 0xF00;
       spiReceive(&SPID1,2,rxbuf);               // Receive 1 frame (8 bits).
       spiUnselect(&SPID1);                      // Unselect slave.
     
@@ -115,7 +115,8 @@ static THD_FUNCTION(spi_thread_1, arg) {
 
       // Display results
       //chprintf(DEBUG_CHP,"Decimal: %u\n", rxbuf[0]);        
-      chprintf(DEBUG_CHP,"Hex: %x\n", rxbuf[0]);        
+      //chprintf(DEBUG_CHP,"Hex: %x\n", rxbuf[0]);        
+      chprintf(DEBUG_CHP,"Decimal: %u\n", rxbuf[0]);        
 
       chThdSleepMilliseconds(1000);
 
