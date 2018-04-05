@@ -5,7 +5,7 @@
 #include "hal.h"
 //#include "acs_sinlut.h"
 
-#define SCALE		3/10
+#define SCALE		8/10
 #define PERIOD 	360
 #define STRETCH 1
 
@@ -23,7 +23,7 @@ typedef struct{
 
 //*
 #define PWM_TIMER_FREQ	48e6 // Hz
-#define PWM_FREQ				30000// periods per sec
+#define PWM_FREQ				10000// periods per sec
 //*/
 
 #define PWM_PERIOD			PWM_TIMER_FREQ/PWM_FREQ 

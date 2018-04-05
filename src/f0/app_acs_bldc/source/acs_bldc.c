@@ -52,7 +52,7 @@ sinctrl_t sinctrl360[] = {
 };
 //*/
 
-//*
+/*
 static sinctrl_t sinctrlSaddle[384] = {
  127,131,135,138,142,145,149,152,
  155,159,162,165,168,171,174,177,
@@ -103,7 +103,7 @@ static sinctrl_t sinctrlSaddle[384] = {
 	68, 72, 76, 80, 84, 88, 92, 96, 
 	99,103,107,111,115,118,121,124
 };
-//*/
+*/
 
 
 // pwm period callback
@@ -134,7 +134,7 @@ static void pwmpcb(PWMDriver *pwmp) {
 }
 
 static sinctrl_t scale(sinctrl_t duty_cycle){
-	return duty_cycle*SCALE + 10;	
+	return duty_cycle;//*SCALE + 10;	
 }
 
 static void pwmCallback(uint8_t channel,sinctrl_t step){
@@ -183,11 +183,11 @@ extern void bldcInit(){
 	bldc.sinctrl_size = PERIOD;
 //	sinctrl_t *psinctrl;
 //	psinctrl=sinctrl360;
-	bldc.sinctrl=sinctrl360;
+	//bldc.sinctrl=sinctrl360;
 //	sinctrl_t *s;
 //	s = sinctrl360;
 //	bldc.sinctrl=s;
-//	bldc.sinctrl=sinctrl360;
+  //bldc.sinctrl=sinctrl360;
 	//bldc.sinctrl_size = sizeof(sinctrl)/sizeof(sinctrl_t);
   bldc.phase_shift = bldc.sinctrl_size/3;
 	bldc.count=0;
