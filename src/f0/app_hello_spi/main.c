@@ -61,9 +61,10 @@ static const SPIConfig spicfg = {
     NULL,               // Operation complete call back.
     GPIOA,              // Chip select line
     GPIOA_SPI1_NSS,     // Chip select port
-    // SPE: Enable SPI peripheral / MSTR: Set MCU as master. / CPHA: Second clock phase data is ready / DFF: 16 bit data frames.
-    SPI_CR1_MSTR | SPI_CR1_BR_1 | SPI_CR1_BR_2 | SPI_CR1_SPE | SPI_CR1_CPHA | SPI_CR1_RXONLY, 
-    0,                  // Chip select port mask
+    // SPI_CR1_BR_X - Dividing clock. / SPI_CR1_CPHA - Second clock transition is first data edge.  
+    SPI_CR1_BR_0 |  SPI_CR1_BR_1 | SPI_CR1_BR_2 | SPI_CR1_CPHA, 	// SPI control register 1 mask. 
+    // SPI_CR2_DS_X = 1111 is 16 bit data transmissions. 
+    SPI_CR2_DS_0 | SPI_CR2_DS_1 | SPI_CR2_DS_2 | SPI_CR2_DS_3,	// SPI control register 2 mask.
 };
 
 
@@ -71,8 +72,7 @@ static const SPIConfig spicfg = {
  * SPI RX buffer.
  * Use 16 bit buffers for receive and transmit. 
  */
-static uint16_t rxbuf[8];
-static uint16_t  rxbuf_2[8];
+static uint16_t rxbuf[2];
 
 
 //=== Serial configuration
@@ -92,39 +92,34 @@ static THD_FUNCTION(spi_thread_1, arg) {
 
   (void)arg;
   chRegSetThreadName("SPI thread 1");
-  char to_disp[30] = {0};
 
-  
-      spiAcquireBus(&SPID1);                    // Gain ownership of bus.
-      spiStart(&SPID1, &spicfg);                // Start driver.
+  uint16_t encoder_val = 0;
+
+  spiStart(&SPID1, &spicfg);                // Start driver.
+  spiAcquireBus(&SPID1);                    // Gain ownership of bus.
+
   while(true)
   {
       rxbuf[0] = 0;
-
       spiSelect(&SPID1);                        // Select slave.
 
       while(SPID1.state != SPI_READY) {}        // Waiting for driver state to be ready.
-      //SPI1->CR2 |= 0xE00;
-      //SPI1->CR2 |= 0xF00;
-      spiReceive(&SPID1,2,rxbuf);               // Receive 1 frame (8 bits).
+      spiReceive(&SPID1,1,rxbuf);               // Receive 1 frame (16 bits).
       spiUnselect(&SPID1);                      // Unselect slave.
-    
-      rxbuf[0] = rxbuf[0] & 0x3FFF;             
-      //itoa(rxbuf[0],to_disp,2); 
-      
 
+      encoder_val = 0x3FFF & rxbuf[0];
+     
       // Display results
-      //chprintf(DEBUG_CHP,"Decimal: %u\n", rxbuf[0]);        
-      //chprintf(DEBUG_CHP,"Hex: %x\n", rxbuf[0]);        
-      chprintf(DEBUG_CHP,"Decimal: %u\n", rxbuf[0]);        
+      chprintf(DEBUG_CHP,"Decimal: %u \n", encoder_val);        
+      //chprintf(DEBUG_CHP,"Hex: %x \n", encoder_val);        
 
       chThdSleepMilliseconds(1000);
 
 
   }
 
-      spiStop(&SPID1);          // Stop driver.
       spiReleaseBus(&SPID1);    // Release ownership of bus.
+      spiStop(&SPID1);          // Stop driver.
 
 }
 
@@ -133,18 +128,8 @@ static void app_init(void) {
     
     int i;
 
-    for(i = 0; i < 8; ++i)      // Initializing receive buffer to zero. 
-      rxbuf_2[i] = 0;
-
-
-    // Initializing SPI pins. 
-    
-   /* 
-    palSetPadMode(GPIOA,GPIOA_SPI1_NSS,PAL_MODE_OUTPUT_PUSHPULL | PAL_STM32_OSPEED_HIGHEST);// New NSS.
-    palSetPadMode(GPIOA,GPIOA_SPI1_SCK,PAL_MODE_ALTERNATE(5) | PAL_STM32_OSPEED_HIGHEST);   // New SCK.
-    palSetPadMode(GPIOA,GPIOA_SPI1_MISO,PAL_MODE_ALTERNATE(5) | PAL_STM32_OSPEED_HIGHEST);  // New MISO.
-
-*/
+    for(i = 0; i < 2; ++i)      // Initializing receive buffer to zero. 
+      rxbuf[i] = 0;
 
 
     // Start up debug output
