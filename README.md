@@ -6,3 +6,6 @@ To initialize the ChibiOS submodule, run:
 Requires `make`, `arm-none-eabi-gcc`, `arm-none-eabi-gdb`, and `openocd` to build/write/debug.
 
 [Documentation](doc/README.md)
+
+After cloning:
+1. git submodule update init

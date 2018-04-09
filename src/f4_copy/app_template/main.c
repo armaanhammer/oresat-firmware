@@ -20,7 +20,7 @@
 #include "chprintf.h"
 
 //=== Project header files
-#include "blinky.h"
+#include "can.h"
 
 //=== Serial configuration
 static SerialConfig ser_cfg =
@@ -30,6 +30,24 @@ static SerialConfig ser_cfg =
     0,          //
     0,          //
 };
+
+//=== Thread definitions
+
+// Example blinker thread
+static THD_WORKING_AREA(waThread1, 128);
+static THD_FUNCTION(Thread1, arg) {
+
+  (void)arg;
+  chRegSetThreadName("thread1");
+
+  while (!chThdShouldTerminateX()) {
+    palClearLine(LINE_LED_GREEN);
+    chThdSleepMilliseconds(500);
+    palSetLine(LINE_LED_GREEN);
+    chThdSleepMilliseconds(500);
+  }
+}
+
 
 static void app_init(void) {
     //=== App initialization
@@ -42,7 +60,7 @@ static void app_init(void) {
 static void main_app(void) {
     //=== Start application threads
 
-    //Blinker thread
+    //Example thread creation
     chThdCreateStatic(waThread1, sizeof(waThread1), NORMALPRIO, Thread1, NULL);
 
     /*
@@ -64,6 +82,10 @@ int main(void) {
      */
     halInit();
     chSysInit();
+    // Initialize CAN Subsystem
+    can_init();
+    // Start CAN threads
+    can_start();
 
     // Initialize and start app
     app_init();

@@ -21,8 +21,8 @@
 
 //=== Project header files
 #include "blinky.h"
-
 //=== Serial configuration
+
 static SerialConfig ser_cfg =
 {
     115200,     //Baud rate
@@ -68,6 +68,7 @@ int main(void) {
 
     // Initialize and start app
     app_init();
+    chprintf(DEBUG_CHP,"HELLO");
     main_app();
 
     return 0;
