@@ -5,6 +5,8 @@
 #include "hal.h"
 #include "chprintf.h"
 
+#define CH_DBG_SYSTEM_STATE_CHECK TRUE
+
 #define THREAD_SIZE	(1<<7) 
 #define CAN_NODE 0x3F // max 0x7f
 
@@ -16,14 +18,15 @@
 #define STRETCH		1
 
 #define PWM_TIMER_FREQ	48e6 // Hz
-#define PWM_FREQ				30e3 // periods per sec
+#define PWM_FREQ				10e3 // periods per sec
+//#define PWM_FREQ				30e3 // periods per sec
 #define PWM_PERIOD			PWM_TIMER_FREQ/PWM_FREQ 
 
 #define PWM_U					0U
 #define PWM_V					1U
 #define PWM_W					2U
 
-#define sinctrl_t uint16_t // in testing
+#define sinctrl_t uint16_t 
 
 typedef struct{
 	int count,		// period counter

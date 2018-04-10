@@ -9,7 +9,7 @@ THD_FUNCTION(acsThread,arg) {
   (void)arg;
   chRegSetThreadName("acsThread");
 
-	//bldcStart();
+	bldcStart();
 
   while (!chThdShouldTerminateX()) {
 //  palClearLine(LINE_LED_GREEN);
@@ -50,7 +50,7 @@ THD_FUNCTION(spiThread,arg){
 		chprintf(DEBUG_CHP,"phase 3: %u \n\n", step);     
 		//chprintf(DEBUG_CHP,"Decimal: %u \n", encoder_val);        
 
-		chThdSleepMilliseconds(1000);
+		chThdSleepMilliseconds(100);
   }
 
 	spiReleaseBus(&SPID1);    // Release ownership of bus.
