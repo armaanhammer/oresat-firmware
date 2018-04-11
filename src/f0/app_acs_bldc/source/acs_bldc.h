@@ -5,7 +5,7 @@
 #include "hal.h"
 //#include "acs_sinlut.h"
 
-#define SCALE		3/10
+#define SCALE		9
 #define PERIOD 	360
 #define STRETCH 1
 
@@ -18,6 +18,7 @@ typedef struct{
 	int count;
 	int scale;
 	int period;
+	int stretch;
 	sinctrl_t *sinctrl;
 } BldcConfig;
 

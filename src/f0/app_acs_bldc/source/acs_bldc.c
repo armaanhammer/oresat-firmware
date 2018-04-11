@@ -52,7 +52,7 @@ sinctrl_t sinctrl360[] = {
 };
 //*/
 
-//*
+/*
 static sinctrl_t sinctrlSaddle[384] = {
  127,131,135,138,142,145,149,152,
  155,159,162,165,168,171,174,177,
@@ -114,18 +114,18 @@ static void pwmpcb(PWMDriver *pwmp) {
 	
 	++bldc.count;
 	
-	if(bldc.count==STRETCH){
+	if(bldc.count==bldc.stretch){
 		++bldc.u;
 		++bldc.v;
 		++bldc.w;
 
-		if(bldc.u >= PERIOD){
+		if(bldc.u >= bldc.period){
 			bldc.u = 0;
 		}
-		if(bldc.v >= PERIOD){
+		if(bldc.v >= bldc.period){
 			bldc.v = 0;
 		}
-		if(bldc.w >= PERIOD){
+		if(bldc.w >= bldc.period){
 			bldc.w = 0;
 		}
 
@@ -134,7 +134,7 @@ static void pwmpcb(PWMDriver *pwmp) {
 }
 
 static sinctrl_t scale(sinctrl_t duty_cycle){
-	return duty_cycle*SCALE + 10;	
+	return (duty_cycle*bldc.scale)/10;	
 }
 
 static void pwmCallback(uint8_t channel,sinctrl_t step){
@@ -142,7 +142,6 @@ static void pwmCallback(uint8_t channel,sinctrl_t step){
   pwmEnableChannelI(
 		&PWMD1,
 		channel,
-		//PWM_PERCENTAGE_TO_WIDTH(&PWMD1,scale(sinctrlSaddle[step]))
 		PWM_PERCENTAGE_TO_WIDTH(&PWMD1,scale(sinctrl360[step]))
 	);
 }
@@ -171,7 +170,6 @@ static PWMConfig pwmcfg = {
    {PWM_OUTPUT_ACTIVE_HIGH|PWM_COMPLEMENTARY_OUTPUT_ACTIVE_HIGH,pwmVcb},
    {PWM_OUTPUT_ACTIVE_HIGH|PWM_COMPLEMENTARY_OUTPUT_ACTIVE_HIGH,pwmWcb},
    {PWM_OUTPUT_ACTIVE_HIGH,NULL}
-   //{PWM_OUTPUT_DISABLED, NULL}
   },
   0,
 	0,
@@ -180,16 +178,11 @@ static PWMConfig pwmcfg = {
 
 
 extern void bldcInit(){
-	bldc.sinctrl_size = PERIOD;
-//	sinctrl_t *psinctrl;
-//	psinctrl=sinctrl360;
-	bldc.sinctrl=sinctrl360;
-//	sinctrl_t *s;
-//	s = sinctrl360;
-//	bldc.sinctrl=s;
-//	bldc.sinctrl=sinctrl360;
+	bldc.period = PERIOD;
+	bldc.stretch = STRETCH;
+	bldc.scale = SCALE;
 	//bldc.sinctrl_size = sizeof(sinctrl)/sizeof(sinctrl_t);
-  bldc.phase_shift = bldc.sinctrl_size/3;
+  bldc.phase_shift = bldc.period/3;
 	bldc.count=0;
   bldc.u = 0;
   bldc.v = bldc.u + bldc.phase_shift;
@@ -200,12 +193,9 @@ extern void bldcInit(){
 
 //	palSetPadMode(GPIOA, 11, PAL_MODE_ALTERNATE(0));
 
-//*
 	pwmEnableChannel(&PWMD1,PWM_U,PWM_PERCENTAGE_TO_WIDTH(&PWMD1,bldc.u));
   pwmEnableChannel(&PWMD1,PWM_V,PWM_PERCENTAGE_TO_WIDTH(&PWMD1,bldc.v));
   pwmEnableChannel(&PWMD1,PWM_W,PWM_PERCENTAGE_TO_WIDTH(&PWMD1,bldc.w));
- // pwmEnableChannel(&PWMD1,PWM_D,PWM_PERCENTAGE_TO_WIDTH(&PWMD1,5000));
-//*/
 
 	// enable pwm center aligned mode
 	// TODO: This is not working. needs more research
@@ -215,7 +205,6 @@ extern void bldcInit(){
 	pwmEnableChannelNotification(&PWMD1,PWM_U);
   pwmEnableChannelNotification(&PWMD1,PWM_V);
   pwmEnableChannelNotification(&PWMD1,PWM_W);
- // pwmEnableChannelNotification(&PWMD1,PWM_D);
 }
 
 extern void bldcStart(){
