@@ -24,30 +24,34 @@
 
 #include "thread1.h"
 
-#define PWM_TIMER_FREQ 10000     // 48k Hz
+#define PWM_TIMER_FREQ 20e3     // 48k Hz
 #define PWM_FREQ 2           // periods per second.
 
 #define PWM_PERIOD PWM_TIMER_FREQ/PWM_FREQ
 
-#define PWM_U 0U
+#define PWM_U 0U        // Software channel
+
+#define DEBUG_SERIAL SD2
+#define DEBUG_CHP ((BaseSequentialStream *) &DEBUG_SERIAL)
 
 static void pwmCallback(uint8_t channel)
 {
-  palSetLine(8u);
+  //palSetLine(8u);
+  /*
   pwmEnableChannel(
                 &PWMD1,
                 channel,
                 PWM_PERCENTAGE_TO_WIDTH(&PWMD1,5000)
       );
-
+  */
+  //chprintf(DEBUG_CHP,"pwmCallback \n");
 
 }
 
 static void pwmpcb(PWMDriver *pwmp) {
   (void)pwmp;
 
-  palClearLine(8u);
-
+  //palClearLine(8u);
 }
 
 static PWMConfig pwm_config = {
@@ -55,8 +59,8 @@ static PWMConfig pwm_config = {
     PWM_PERIOD,         // Period
     NULL,               // Callback
     {                   // Channels
-      //{PWM_OUTPUT_ACTIVE_HIGH,pwmCallback},
-      {PWM_OUTPUT_ACTIVE_HIGH,NULL},
+      {PWM_OUTPUT_ACTIVE_HIGH,pwmpcb},
+      //{PWM_OUTPUT_ACTIVE_HIGH,NULL},
       {0},
       {0},
       {0}
@@ -82,15 +86,17 @@ static void app_init(void) {
   
 
     pwmStart(&PWMD1,&pwm_config);
+    
     pwmEnableChannel(
                 &PWMD1,
-                0,
+                0U,
                 PWM_PERCENTAGE_TO_WIDTH(&PWMD1,5000)
       );
 
 
     // Start up debug output
     sdStart(&SD2, &ser_cfg);
+    chprintf(DEBUG_CHP,"Hello wrld!\n");
 
 }
 
@@ -106,7 +112,9 @@ static void main_app(void) {
     while (true)
     {
         
-        chThdSleepMilliseconds(1000);
+        chThdSleepMilliseconds(5000);
+        if(test == 1)
+        chprintf(DEBUG_CHP,"Hello wrld!\n");
     }
 }
 
