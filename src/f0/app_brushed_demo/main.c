@@ -24,29 +24,26 @@
 
 #include "thread1.h"
 
-#define PWM_TIMER_FREQ 20e3     // 48k Hz
-#define PWM_FREQ 2           // periods per second.
+//#define PWM_TIMER_FREQ 48e3     // 48k Hz
+#define PWM_TIMER_FREQ 48e3     // 48k Hz
+//#define PWM_FREQ 3e3           // periods per second.
+#define PWM_FREQ 48           // periods per second.
 
 #define PWM_PERIOD PWM_TIMER_FREQ/PWM_FREQ
 
-#define PWM_U 0U        // Software channel
+#define PWM_SW_CHANNEL 0        // Software channel
 
 #define DEBUG_SERIAL SD2
 #define DEBUG_CHP ((BaseSequentialStream *) &DEBUG_SERIAL)
 
+/*
 static void pwmCallback(uint8_t channel)
 {
   //palSetLine(8u);
-  /*
-  pwmEnableChannel(
-                &PWMD1,
-                channel,
-                PWM_PERCENTAGE_TO_WIDTH(&PWMD1,5000)
-      );
-  */
   //chprintf(DEBUG_CHP,"pwmCallback \n");
 
 }
+*/
 
 static void pwmpcb(PWMDriver *pwmp) {
   (void)pwmp;
@@ -55,15 +52,16 @@ static void pwmpcb(PWMDriver *pwmp) {
 }
 
 static PWMConfig pwm_config = {
-    PWM_TIMER_FREQ,     // Frequency
-    PWM_PERIOD,         // Period
+    //PWM_TIMER_FREQ,     // Frequency
+    3000000,     // Frequency
+    //PWM_PERIOD,         // Period
+    1000,         // Period
     NULL,               // Callback
     {                   // Channels
       {PWM_OUTPUT_ACTIVE_HIGH,pwmpcb},
-      //{PWM_OUTPUT_ACTIVE_HIGH,NULL},
-      {0},
-      {0},
-      {0}
+      {PWM_OUTPUT_DISABLED,NULL},
+      {PWM_OUTPUT_DISABLED,NULL},
+      {PWM_OUTPUT_DISABLED,NULL}
     },
     0,
     0
@@ -87,16 +85,11 @@ static void app_init(void) {
 
     pwmStart(&PWMD1,&pwm_config);
     
-    pwmEnableChannel(
-                &PWMD1,
-                0U,
-                PWM_PERCENTAGE_TO_WIDTH(&PWMD1,5000)
-      );
-
+    //palClearPad(GPIOB,6u);    // Phase selection (direction of motor).
+    palSetPad(GPIOB,7u);        // Set Enable high.
 
     // Start up debug output
     sdStart(&SD2, &ser_cfg);
-    chprintf(DEBUG_CHP,"Hello wrld!\n");
 
 }
 
@@ -111,10 +104,26 @@ static void main_app(void) {
      */
     while (true)
     {
-        
-        chThdSleepMilliseconds(5000);
-        if(test == 1)
-        chprintf(DEBUG_CHP,"Hello wrld!\n");
+      palSetPad(GPIOB,6u);    // Phase selection (direction of motor).
+      pwmEnableChannel(
+                &PWMD1,
+                PWM_SW_CHANNEL,
+                PWM_PERCENTAGE_TO_WIDTH(&PWMD1,4000)
+        );
+
+    
+      chThdSleepMilliseconds(5000);
+      pwmDisableChannel(&PWMD1,PWM_SW_CHANNEL);
+
+      palClearPad(GPIOB,6u);    // Phase selection (direction of motor).
+      pwmEnableChannel(
+                &PWMD1,
+                PWM_SW_CHANNEL,
+                PWM_PERCENTAGE_TO_WIDTH(&PWMD1,8000)
+        );
+
+      chThdSleepMilliseconds(5000);
+      pwmDisableChannel(&PWMD1,PWM_SW_CHANNEL);
     }
 }
 
@@ -129,6 +138,10 @@ int main(void) {
     halInit();
     chSysInit();
     oresat_init(0);
+
+    // test ports for motor phase and driver enable.
+    palSetPadMode(GPIOB,6u,PAL_MODE_OUTPUT_PUSHPULL);
+    palSetPadMode(GPIOB,7u,PAL_MODE_OUTPUT_PUSHPULL);
 
     // Initialize and start app
     app_init();
