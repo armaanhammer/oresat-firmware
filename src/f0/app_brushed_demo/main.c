@@ -53,7 +53,7 @@ static void pwmpcb(PWMDriver *pwmp) {
 
 static PWMConfig pwm_config = {
     //PWM_TIMER_FREQ,     // Frequency
-    3000000,     // Frequency
+    2000000,       // Frequency Hz
     //PWM_PERIOD,         // Period
     1000,         // Period
     NULL,               // Callback
