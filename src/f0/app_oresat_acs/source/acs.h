@@ -35,6 +35,9 @@
 #define PWM_V					1U
 #define PWM_W					2U
 
+#define ADC_GRP_NUM_CHANNELS   1
+#define ADC_GRP_BUF_DEPTH      8 
+
 #define sinctrl_t uint16_t 
 
 typedef struct{
@@ -52,6 +55,9 @@ typedef struct{
   uint16_t position;				// motor position from encoder
 	sinctrl_t const *sinctrl; // pointer to the sin lut
 	ACSdata *data;
+  adcsample_t samples[ADC_GRP_NUM_CHANNELS * ADC_GRP_BUF_DEPTH]; // ADC conversion storage array
+
+
 } BldcConfig;
 
 static const SPIConfig spicfg = {

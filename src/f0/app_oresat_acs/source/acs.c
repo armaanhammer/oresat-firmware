@@ -47,12 +47,16 @@ THD_FUNCTION(spiThread,arg){
 		bldc.position = 0x3FFF & rxbuf[0];
 	 
 		step = bldc.position*360/(1<<14);
-		chprintf(DEBUG_CHP,"enc pos: %u \n", bldc.position);        
-		chprintf(DEBUG_CHP,"phase 1: %u \n", step);     
+		chprintf(DEBUG_CHP,"enc pos: %u \r\n", bldc.position);        
+		chprintf(DEBUG_CHP,"phase 1: %u \r\n", step);     
 		step = (step + bldc.phase_shift)%360;
-		chprintf(DEBUG_CHP,"phase 2: %u \n", step);     
+		chprintf(DEBUG_CHP,"phase 2: %u \r\n", step);     
 		step = (step + bldc.phase_shift)%360;
-		chprintf(DEBUG_CHP,"phase 3: %u \n\n", step);     
+		chprintf(DEBUG_CHP,"phase 3: %u \r\n", step);     
+
+    chprintf(DEBUG_CHP, "ADC: %u \r\n\n", (int)bldc.samples[0]);
+
+
 
 		chThdSleepMilliseconds(100);
   }
