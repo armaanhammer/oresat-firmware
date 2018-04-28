@@ -61,6 +61,27 @@ THD_FUNCTION(spiThread,arg){
 	spiStop(&SPID1);          // Stop driver.
 }
 
+static void adcerrorcallback(ADCDriver *adcp, adcerror_t err) {
+    (void)adcp;
+    (void)err;
+}
+
+/*
+ * ADC conversion group.
+ * Mode:        Continuous, 8 samples of 1 channel, SW triggered.
+ * Channels:    A0 
+ */
+static const ADCConversionGroup adcgrpcfg = {
+    TRUE,
+    ADC_GRP_NUM_CHANNELS,
+    NULL,
+    adcerrorcallback,
+    ADC_CFGR1_CONT | ADC_CFGR1_RES_12BIT,             /* CFGRR1 */
+    ADC_TR(0, 0),                                     /* TR */
+    ADC_SMPR_SMP_239P5,                                /* SMPR */
+    ADC_CHSELR_CHSEL0                                /* CHSELR */
+};
+
 // pwm period callback
 static void pwmpcb(PWMDriver *pwmp) {
   (void)pwmp;
@@ -101,6 +122,10 @@ static sinctrl_t scale(sinctrl_t duty_cycle){
 	return (duty_cycle*bldc.scale)/10;	
 }
 
+// TODO MAX 
+// What the fuck is the enable doing here? Probably not what we want.
+// Why has it been working?
+// Will it work better when I fix this?
 static void pwmCallback(uint8_t channel,sinctrl_t step){
  // palSetLine(LINE_LED_GREEN);
   pwmEnableChannelI(
@@ -143,6 +168,12 @@ static PWMConfig pwmcfg = {
 extern void acsInit(ACSdata *data){
 	bldc.data = data;
 	bldcInit();
+  
+  adcStart(&ADCD1, NULL); 
+  /*
+  * Starts an ADC continuous conversion.
+  */
+  adcStartConversion(&ADCD1, &adcgrpcfg, bldc.samples, ADC_GRP_BUF_DEPTH);
 }
 
 extern void bldcInit(){
