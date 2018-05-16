@@ -308,7 +308,7 @@ static void pwmpcb(PWMDriver *pwmp) {
   palClearLine(LINE_LED_GREEN);
 	//configure = true;
   
-  if (count > 2000)
+  if (count > 4000)
   {
     if (!down)
     {
