@@ -68,7 +68,11 @@ typedef enum{
 	ST_INIT,
 	ST_RDY,
 	ST_RW,
-	ST_MTQR
+	ST_RW_START,		
+	ST_RW_STOP,			
+	ST_MTQR,
+	ST_MTQR_START,  
+	ST_MTQR_STOP   
 }acs_state;
 
 /**
@@ -83,16 +87,15 @@ typedef enum {
 	EV_INIT,				/// 1
 	EV_RDY,					/// 2
 	EV_RW,					/// 3
-	EV_MTQR,				/// 4
-	EV_STATUS,			/// 5
-	EV_RW_START,		/// 6
-	EV_RW_STOP,			/// 7
-  EV_RW_STRETCH,  /// 8
-  EV_RW_CONTROL,  /// 9
-  EV_RW_SKIP,     /// a
-  EV_RW_SCALE,    /// b
-	EV_MTQR_START,  /// c
-	EV_MTQR_STOP,   /// d
+	EV_RW_START,		/// 4
+	EV_RW_STOP,			/// 5
+	EV_MTQR,				/// 6
+	EV_MTQR_START,  /// 7
+	EV_MTQR_STOP,   /// 8
+  EV_RW_STRETCH,  /// 9
+  EV_RW_CONTROL,  /// a
+  EV_RW_SKIP,     /// b
+  EV_RW_SCALE,    /// c
 	EV_END // this must be the last event
 }acs_event;
 

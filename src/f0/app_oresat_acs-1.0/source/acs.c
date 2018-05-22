@@ -13,7 +13,11 @@ char *state_name[] = {
 	"ST_INIT",
 	"ST_RDY",
 	"ST_RW",
-	"ST_MTQR"
+	"ST_RW_START",		
+	"ST_RW_STOP",			
+	"ST_MTQR",
+	"ST_MTQR_START",  
+	"ST_MTQR_STOP"   
 };
 
 /**
@@ -27,16 +31,15 @@ char *event_name[] = {
 	"EV_INIT",
 	"EV_RDY",
 	"EV_RW",
-	"EV_MTQR",
-	"EV_STATUS",
 	"EV_RW_START",
 	"EV_RW_STOP",
+	"EV_MTQR",
+	"EV_MTQR_START",
+	"EV_MTQR_STOP",
   "EV_RW_STRETCH",
   "EV_RW_CONTROL",
   "EV_RW_SKIP",
   "EV_RW_SCALE",
-	"EV_MTQR_START",
-	"EV_MTQR_STOP",
 	"EV_END"
 };
 
@@ -282,16 +285,6 @@ static int trap_rw_scale(ACS *acs)
  *
  *
  */
-static int trap_fsm_status(ACS *acs){
-	(void)acs;
-	return EXIT_SUCCESS;
-}
-
-/**
- *
- *
- *
- */
 const acs_trap trap[] = {
 	{ST_RW,			EV_RW_START,		&trap_rw_start},
 	{ST_RW,			EV_RW_STOP,			&trap_rw_stop},
@@ -301,7 +294,6 @@ const acs_trap trap[] = {
   {ST_RW,			EV_RW_SCALE,		&trap_rw_scale},
 	{ST_MTQR,		EV_MTQR_START,	&trap_mtqr_start},
 	{ST_MTQR,		EV_MTQR_STOP,		&trap_mtqr_stop},
-	{ST_ANY,		EV_STATUS,			&trap_fsm_status}
 };
 
 #define EVENT_COUNT (int)(sizeof(trap)/sizeof(acs_trap))
@@ -339,14 +331,18 @@ static int fsm_trap(ACS *acs){
  *
  */
 const acs_transition trans[] = {
-	{ST_INIT, 	EV_RDY,		&state_rdy},
-	{ST_INIT, 	EV_OFF,		&state_off},
-	{ST_RDY, 		EV_RW,		&state_rw},
-	{ST_RDY, 		EV_MTQR,	&state_mtqr},
-	{ST_RDY, 		EV_OFF,		&state_off},
-	{ST_RW, 		EV_RDY,		&state_rdy},
-	{ST_MTQR, 	EV_RDY,		&state_rdy},
-	{ST_ANY, 		EV_ANY,		&fsm_trap}
+	{ST_INIT,				EV_RDY,				&state_rdy},
+	{ST_INIT,				EV_OFF,				&state_off},
+	{ST_RDY,				EV_RW,				&state_rw},
+	{ST_RDY,				EV_MTQR,			&state_mtqr},
+	{ST_RDY,				EV_OFF,				&state_off},
+	{ST_RW,					EV_RDY,				&state_rdy},
+	{ST_RW,					EV_RW_START,	&state_rw_start},
+	{ST_RW_START,		EV_RW_STOP,		&state_rw_stop},
+	{ST_MTQR,				EV_RDY,				&state_rdy},
+	{ST_MTQR,				EV_MTQR_START,&state_mtqr_start},
+	{ST_MTQR_START,	EV_MTQR_STOP,	&state_mtqr_stop},
+	{ST_ANY,				EV_ANY,				&fsm_trap}
 };
 
 /**

@@ -15,7 +15,6 @@
 #define PH				 						6u	/// Phase (motor direction)
 #define ENABLE    						7u	/// Encoder chip enable
 																	/// Logic low
-
 #define EXIT_SUCCESS 					0
 #define EXIT_FAILURE 					1
 
@@ -24,10 +23,7 @@
  *
  *
  *
- *
- * 
  */
-
 static const PWMConfig pwm_MTQRcfg = {
 	MTQR_PWM_TIMER_FREQ,    // Frequency
 	MTQR_PWM_PERIOD,        // period duration 
@@ -43,6 +39,12 @@ static const PWMConfig pwm_MTQRcfg = {
 	0
 };
 
+/**
+ *
+ *
+ *
+ *
+ */
 typedef struct{
 	uint8_t direction;
 	uint16_t pwm_dc; /// duty cycle
