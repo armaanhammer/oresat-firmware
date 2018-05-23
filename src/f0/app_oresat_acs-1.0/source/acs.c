@@ -2,7 +2,7 @@
 
 event_listener_t el;
 
-static uint16_t freq = 1;
+static uint16_t freq = PWM_TIMER_FREQ/PWM_FREQ;
 
 char *state_name[] = {
 	"ST_ANY",
@@ -236,7 +236,7 @@ static acs_event getNextEvent(ACS *acs){
 			break;
 		case CHG_STATE:
 			event = recv[ARG_BYTE];
-      acs->data = (recv[ARG_BYTE+1] << 4) | recv[ARG_BYTE+2];			
+      acs->data = (recv[ARG_BYTE+1] << 8) | recv[ARG_BYTE+2];			
 			break;
 		case REPORT_STATUS:
 			event = EV_STATUS;			
