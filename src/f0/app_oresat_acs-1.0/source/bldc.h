@@ -15,7 +15,7 @@
 #define DEBUG_CHP ((BaseSequentialStream *) &DEBUG_SERIAL)
 
 #define SCALE			100
-#define STEPS			360 
+#define STEPS			384 
 #define STRETCH		1
 #define SKIP      1
 #define STEP_SIZE 1

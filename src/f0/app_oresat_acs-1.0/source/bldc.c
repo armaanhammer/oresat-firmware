@@ -153,7 +153,7 @@ extern void bldcInit(bldc *pbldc){
   motor->stretch_count = 0;
 	motor->scale = SCALE;
   motor->skip = SKIP;
-	motor->sinctrl = sinctrl360;
+	motor->sinctrl = saddleWave;
 	motor->count = 0;
 	motor->position = 0;
 	motor->phase_shift = motor->steps/3;

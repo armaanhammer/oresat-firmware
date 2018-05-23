@@ -2,6 +2,8 @@
 
 event_listener_t el;
 
+static uint16_t freq = 1;
+
 char *state_name[] = {
 	"ST_ANY",
 	"ST_OFF",
@@ -158,6 +160,14 @@ static int trap_rw_scale(ACS *acs)
   return EXIT_SUCCESS;
 }
 
+static int trap_rw_period(ACS *acs)
+{
+  (void)acs;
+  freq = PWM_TIMER_FREQ / acs->data;
+  pwmChangePeriodI(&PWMD1, freq);
+  return EXIT_SUCCESS;
+}
+
 static int trap_fsm_status(ACS *acs){
 	(void)acs;
 	return EXIT_SUCCESS;
@@ -170,6 +180,7 @@ const acs_trap trap[] = {
   {ST_RW,   EV_RW_CONTROL,&trap_rw_control},
   {ST_RW,   EV_RW_SKIP,   &trap_rw_skip},
   {ST_RW,   EV_RW_SCALE,   &trap_rw_scale},
+  {ST_RW,   EV_RW_PERIOD,   &trap_rw_period},
 //	{ST_MTQR, EV_STATUS,	&trap_mtqr_status},
 	{ST_ANY, 	EV_STATUS,		&trap_fsm_status}
 };
@@ -225,7 +236,7 @@ static acs_event getNextEvent(ACS *acs){
 			break;
 		case CHG_STATE:
 			event = recv[ARG_BYTE];
-      acs->data = recv[ARG_BYTE+1];			
+      acs->data = (recv[ARG_BYTE+1] << 4) | recv[ARG_BYTE+2];			
 			break;
 		case REPORT_STATUS:
 			event = EV_STATUS;			
@@ -270,10 +281,11 @@ static int acs_statemachine(ACS *acs){
 			}
 		}
     chThdSleepMilliseconds(500);
+    chprintf(DEBUG_CHP, "freq: %d\r\n", freq);
     chprintf(DEBUG_CHP, "motor stretch: %d\r\n", acs->motor.stretch);
     chprintf(DEBUG_CHP, "motor openLoop: %d\r\n", acs->motor.openLoop);
-    chprintf(DEBUG_CHP, "motor skip: %d\r\n\n", acs->motor.skip);
-    chprintf(DEBUG_CHP, "motor scale: %d\r\n\n", acs->motor.scale);
+    chprintf(DEBUG_CHP, "motor skip: %d\r\n", acs->motor.skip);
+    chprintf(DEBUG_CHP, "motor scale: %d\r\n", acs->motor.scale);
     chprintf(DEBUG_CHP, "motor samples: %d\r\n\n", acs->motor.samples[0]);
 
 	}

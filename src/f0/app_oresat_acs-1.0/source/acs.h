@@ -8,7 +8,7 @@
 #include "chprintf.h"
 #include "oresat.h"
 
-#define WA_ACS_THD_SIZE (1<<7)
+#define WA_ACS_THD_SIZE (120)
 #define CAN_NODE 				0x3F // max 0x7f
 #define CAN_BUF_SIZE 		8
 
@@ -82,6 +82,7 @@ typedef enum {
   EV_RW_CONTROL,  // 9
   EV_RW_SKIP,     // a
   EV_RW_SCALE,    // b
+  EV_RW_PERIOD,   // c
 	EV_END // this must be the last event
 }acs_event;
 
@@ -96,7 +97,7 @@ typedef struct{
 	can_buffer can_buf;
 	bldc motor;
   // TODO find a better way to handle it
-  uint8_t data;
+  uint16_t data;
 }ACS;
 
 typedef struct{
