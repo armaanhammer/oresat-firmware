@@ -34,7 +34,6 @@
 #define CHUNK_AMOUNT 6
 #define CHUNK_SIZE 2730
 
-
 #define PWM_TIMER_FREQ	48e6 /// Hz
 #define PWM_FREQ				15e3 /// periods per sec
 #define PWM_PERIOD			PWM_TIMER_FREQ/PWM_FREQ 
