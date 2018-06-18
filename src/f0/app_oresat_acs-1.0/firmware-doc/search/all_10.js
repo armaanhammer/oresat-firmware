@@ -2,7 +2,7 @@ var searchData=
 [
   ['saddle_5flut_2eh',['saddle_lut.h',['../saddle__lut_8h.html',1,'']]],
   ['samples',['samples',['../structbldc.html#a271e4c4eb2638b5eb650fa0970c97a36',1,'bldc']]],
-  ['scale',['scale',['../structbldc.html#a3ee6d175bc43c2ab8bf4d0cc56d3bd30',1,'bldc::scale()'],['../bldc_8h.html#a0cbea62f1ce2043dd08108e65ed8de1d',1,'SCALE():&#160;bldc.h'],['../bldc_8c.html#ab763f499f8303fd5d714ef316ca60021',1,'scale(sinctrl_t duty_cycle):&#160;bldc.c']]],
+  ['scale',['scale',['../structbldc.html#a3ee6d175bc43c2ab8bf4d0cc56d3bd30',1,'bldc::scale()'],['../bldc_8c.html#ab763f499f8303fd5d714ef316ca60021',1,'scale(sinctrl_t duty_cycle):&#160;bldc.c'],['../bldc_8h.html#a0cbea62f1ce2043dd08108e65ed8de1d',1,'SCALE():&#160;bldc.h']]],
   ['sdc_5finit_5fretry',['SDC_INIT_RETRY',['../group__HAL__CONF.html#ga8d39f0c9799062f0698d97c26e6fa42d',1,'halconf.h']]],
   ['sdc_5fmmc_5fsupport',['SDC_MMC_SUPPORT',['../group__HAL__CONF.html#ga4f938eff7370feb8de8411e255d21b01',1,'halconf.h']]],
   ['sdc_5fnice_5fwaiting',['SDC_NICE_WAITING',['../group__HAL__CONF.html#ga3391c832c171a8606b0fc864766f08ba',1,'halconf.h']]],
@@ -35,7 +35,6 @@ var searchData=
   ['state_5foff',['state_off',['../acs_8c.html#aadca0fcccd7f212a6884f9ad24f1f0c2',1,'acs.c']]],
   ['state_5frdy',['state_rdy',['../acs_8c.html#ac643faeabb010f6df36a6f43d4396d94',1,'acs.c']]],
   ['state_5frw',['state_rw',['../acs_8c.html#aa15ee79c4a85c6434d4a613e667cb52c',1,'acs.c']]],
-  ['step_5fsize',['STEP_SIZE',['../bldc_8h.html#a47024204d8ea2cdcc3154f63677b3832',1,'bldc.h']]],
   ['steps',['steps',['../structbldc.html#a027cb3f86fa67b585334e8755e21cff1',1,'bldc::steps()'],['../bldc_8h.html#a1ca9f64427b2bc5b538fe2fa2501c639',1,'STEPS():&#160;bldc.h']]],
   ['stm32_5fadc_5fadc1_5fckmode',['STM32_ADC_ADC1_CKMODE',['../mcuconf_8h.html#a184be7270b745cdd85c8b651a8a44e8c',1,'mcuconf.h']]],
   ['stm32_5fadc_5fadc1_5fdma_5firq_5fpriority',['STM32_ADC_ADC1_DMA_IRQ_PRIORITY',['../mcuconf_8h.html#a19080c8c395ae24df995fa57a2291465',1,'mcuconf.h']]],

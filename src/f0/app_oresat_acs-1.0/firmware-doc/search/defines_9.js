@@ -3,7 +3,6 @@ var searchData=
   ['scale',['SCALE',['../bldc_8h.html#a0cbea62f1ce2043dd08108e65ed8de1d',1,'bldc.h']]],
   ['sinctrl_5ft',['sinctrl_t',['../bldc_8h.html#abd971c6edb54a543ddcc907c0e35b3ba',1,'bldc.h']]],
   ['skip',['SKIP',['../bldc_8h.html#a688a4adbb87520a2b68681bd6bfb199e',1,'bldc.h']]],
-  ['step_5fsize',['STEP_SIZE',['../bldc_8h.html#a47024204d8ea2cdcc3154f63677b3832',1,'bldc.h']]],
   ['steps',['STEPS',['../bldc_8h.html#a1ca9f64427b2bc5b538fe2fa2501c639',1,'bldc.h']]],
   ['stm32_5fadc_5fadc1_5fckmode',['STM32_ADC_ADC1_CKMODE',['../mcuconf_8h.html#a184be7270b745cdd85c8b651a8a44e8c',1,'mcuconf.h']]],
   ['stm32_5fadc_5fadc1_5fdma_5firq_5fpriority',['STM32_ADC_ADC1_DMA_IRQ_PRIORITY',['../mcuconf_8h.html#a19080c8c395ae24df995fa57a2291465',1,'mcuconf.h']]],

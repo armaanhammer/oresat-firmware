@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>ACS Doxygen test: MTQR Struct Reference</title>
+<title>ACS Doxygen test: acs_transition Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -61,59 +61,63 @@ $(function() {
   <div class="summary">
 <a href="#pub-attribs">Data Fields</a>  </div>
   <div class="headertitle">
-<div class="title">MTQR Struct Reference</div>  </div>
+<div class="title">acs_transition Struct Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;<a class="el" href="">magnetorquer.h</a>&gt;</code></p>
+<p>structure for manipulating state transistions and trap functions  
+ <a href="structacs__transition.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="">acs.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Data Fields</h2></td></tr>
-<tr class="memitem:a32118f23fd8d3906bd8b6ca72e6b2e12"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMTQR.html#a32118f23fd8d3906bd8b6ca72e6b2e12">direction</a></td></tr>
-<tr class="separator:a32118f23fd8d3906bd8b6ca72e6b2e12"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab1c9eb528da562c3a163f2058cd1dfb9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMTQR.html#ab1c9eb528da562c3a163f2058cd1dfb9">started</a></td></tr>
-<tr class="separator:ab1c9eb528da562c3a163f2058cd1dfb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0ff437231d61ef7f7551c0566e6bad9b"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMTQR.html#a0ff437231d61ef7f7551c0566e6bad9b">pwm_dc</a></td></tr>
-<tr class="separator:a0ff437231d61ef7f7551c0566e6bad9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac0d482141c0fdbf292d9fa8668cfbf0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="acs_8h.html#a5ec33f10ee8571c85647b9f7d4525776">acs_state</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structacs__transition.html#aac0d482141c0fdbf292d9fa8668cfbf0">state</a></td></tr>
+<tr class="separator:aac0d482141c0fdbf292d9fa8668cfbf0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e379a517f2c264d3bb2adf7c1bfd308"><td class="memItemLeft" align="right" valign="top"><a class="el" href="acs_8h.html#adeadea9405ca033d712034d8b45d6029">acs_event</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structacs__transition.html#a3e379a517f2c264d3bb2adf7c1bfd308">event</a></td></tr>
+<tr class="separator:a3e379a517f2c264d3bb2adf7c1bfd308"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7312488929ef069f69b4eec4dcc6e30c"><td class="memItemLeft" align="right" valign="top">int(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structacs__transition.html#a7312488929ef069f69b4eec4dcc6e30c">fn</a> )(<a class="el" href="structACS.html">ACS</a> *<a class="el" href="main_8c.html#abc22b9135f820ab7b8b3ca2434839a14">acs</a>)</td></tr>
+<tr class="separator:a7312488929ef069f69b4eec4dcc6e30c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"></div><h2 class="groupheader">Field Documentation</h2>
-<a id="a32118f23fd8d3906bd8b6ca72e6b2e12"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a32118f23fd8d3906bd8b6ca72e6b2e12">&#9670;&nbsp;</a></span>direction</h2>
+<div class="textblock"><p>structure for manipulating state transistions and trap functions </p>
+</div><h2 class="groupheader">Field Documentation</h2>
+<a id="a3e379a517f2c264d3bb2adf7c1bfd308"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e379a517f2c264d3bb2adf7c1bfd308">&#9670;&nbsp;</a></span>event</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">uint8_t MTQR::direction</td>
+          <td class="memname"><a class="el" href="acs_8h.html#adeadea9405ca033d712034d8b45d6029">acs_event</a> acs_transition::event</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="a0ff437231d61ef7f7551c0566e6bad9b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0ff437231d61ef7f7551c0566e6bad9b">&#9670;&nbsp;</a></span>pwm_dc</h2>
+<a id="a7312488929ef069f69b4eec4dcc6e30c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7312488929ef069f69b4eec4dcc6e30c">&#9670;&nbsp;</a></span>fn</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">uint16_t MTQR::pwm_dc</td>
+          <td class="memname">int(* acs_transition::fn) (<a class="el" href="structACS.html">ACS</a> *<a class="el" href="main_8c.html#abc22b9135f820ab7b8b3ca2434839a14">acs</a>)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="ab1c9eb528da562c3a163f2058cd1dfb9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab1c9eb528da562c3a163f2058cd1dfb9">&#9670;&nbsp;</a></span>started</h2>
+<a id="aac0d482141c0fdbf292d9fa8668cfbf0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac0d482141c0fdbf292d9fa8668cfbf0">&#9670;&nbsp;</a></span>state</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int MTQR::started</td>
+          <td class="memname"><a class="el" href="acs_8h.html#a5ec33f10ee8571c85647b9f7d4525776">acs_state</a> acs_transition::state</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -121,7 +125,7 @@ Data Fields</h2></td></tr>
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li>source/<a class="el" href="">magnetorquer.h</a></li>
+<li>source/<a class="el" href="">acs.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

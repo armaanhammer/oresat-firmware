@@ -65,6 +65,9 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>The structure that defines and characterizes a motor and how it's being control.  
+ <a href="structbldc.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="">bldc.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
@@ -72,10 +75,13 @@ Data Fields</h2></td></tr>
 <tr class="memitem:ac738285f1af7f40c9bc73ab38c4d583b"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbldc.html#ac738285f1af7f40c9bc73ab38c4d583b">count</a></td></tr>
 <tr class="separator:ac738285f1af7f40c9bc73ab38c4d583b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3ee6d175bc43c2ab8bf4d0cc56d3bd30"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbldc.html#a3ee6d175bc43c2ab8bf4d0cc56d3bd30">scale</a></td></tr>
+<tr class="memdesc:a3ee6d175bc43c2ab8bf4d0cc56d3bd30"><td class="mdescLeft">&#160;</td><td class="mdescRight">period counter  <a href="#a3ee6d175bc43c2ab8bf4d0cc56d3bd30">More...</a><br /></td></tr>
 <tr class="separator:a3ee6d175bc43c2ab8bf4d0cc56d3bd30"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a027cb3f86fa67b585334e8755e21cff1"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbldc.html#a027cb3f86fa67b585334e8755e21cff1">steps</a></td></tr>
+<tr class="memdesc:a027cb3f86fa67b585334e8755e21cff1"><td class="mdescLeft">&#160;</td><td class="mdescRight">scales the duty cycle  <a href="#a027cb3f86fa67b585334e8755e21cff1">More...</a><br /></td></tr>
 <tr class="separator:a027cb3f86fa67b585334e8755e21cff1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac2cc6f385cc583e04c550d2f9cf00143"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbldc.html#ac2cc6f385cc583e04c550d2f9cf00143">stretch</a></td></tr>
+<tr class="memdesc:ac2cc6f385cc583e04c550d2f9cf00143"><td class="mdescLeft">&#160;</td><td class="mdescRight">number of steps in lut  <a href="#ac2cc6f385cc583e04c550d2f9cf00143">More...</a><br /></td></tr>
 <tr class="separator:ac2cc6f385cc583e04c550d2f9cf00143"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a495cad51d278b0620330cf3d5c6d511e"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbldc.html#a495cad51d278b0620330cf3d5c6d511e">skip</a></td></tr>
 <tr class="separator:a495cad51d278b0620330cf3d5c6d511e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -86,8 +92,10 @@ Data Fields</h2></td></tr>
 <tr class="memitem:ac9fdde02b2558abbbd996487e9614f3e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="bldc_8h.html#abd971c6edb54a543ddcc907c0e35b3ba">sinctrl_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbldc.html#ac9fdde02b2558abbbd996487e9614f3e">w</a></td></tr>
 <tr class="separator:ac9fdde02b2558abbbd996487e9614f3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac05eef7bdb4d5c9a6c82c54802a34ce2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="bldc_8h.html#abd971c6edb54a543ddcc907c0e35b3ba">sinctrl_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbldc.html#ac05eef7bdb4d5c9a6c82c54802a34ce2">phase_shift</a></td></tr>
+<tr class="memdesc:ac05eef7bdb4d5c9a6c82c54802a34ce2"><td class="mdescLeft">&#160;</td><td class="mdescRight">signals  <a href="#ac05eef7bdb4d5c9a6c82c54802a34ce2">More...</a><br /></td></tr>
 <tr class="separator:ac05eef7bdb4d5c9a6c82c54802a34ce2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6e61de284661dc70186e6b9ae54bd30e"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbldc.html#a6e61de284661dc70186e6b9ae54bd30e">current_sin_u</a></td></tr>
+<tr class="memdesc:a6e61de284661dc70186e6b9ae54bd30e"><td class="mdescLeft">&#160;</td><td class="mdescRight">should be by 120 degrees  <a href="#a6e61de284661dc70186e6b9ae54bd30e">More...</a><br /></td></tr>
 <tr class="separator:a6e61de284661dc70186e6b9ae54bd30e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac54819fc029aada61962d06bf9bcaa08"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbldc.html#ac54819fc029aada61962d06bf9bcaa08">next_sin_u</a></td></tr>
 <tr class="separator:ac54819fc029aada61962d06bf9bcaa08"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -119,7 +127,19 @@ Data Fields</h2></td></tr>
 <tr class="separator:a113e4d6a5b11bf8c10c4192c12598465"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"></div><h2 class="groupheader">Field Documentation</h2>
+<div class="textblock"><p>The structure that defines and characterizes a motor and how it's being control. </p>
+<p>steps: Steps in the LUT</p>
+<p>stretch: How many steps are added in between LUT steps</p>
+<p>skip: How many steps are skipped in the LUT</p>
+<p>u, v, and w: The three sin signals, that traverse through the LUT current_sin_u,v,w and next_sin_u,v,w: Used in calculation of values for stretch</p>
+<p>sin_diff: Difference in LUT steps for stretch</p>
+<p>position: Position from encode, a value of 0 - 2^14</p>
+<p>openLoop: Controls whether encoder feedback is used</p>
+<p>sinctrl: The LUT</p>
+<p>spi_rxbuff: Where the encoder position is after SPI transmission</p>
+<p>p_spi_thread: Spi thread for the encoder feedback</p>
+<p>samples: Samples from the ADC. </p>
+</div><h2 class="groupheader">Field Documentation</h2>
 <a id="ac738285f1af7f40c9bc73ab38c4d583b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac738285f1af7f40c9bc73ab38c4d583b">&#9670;&nbsp;</a></span>count</h2>
 
@@ -145,6 +165,8 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>should be by 120 degrees </p>
 
 </div>
 </div>
@@ -258,6 +280,8 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>signals </p>
+
 </div>
 </div>
 <a id="a7e063b835df0a49bb1300c58fb17fedc"></a>
@@ -299,6 +323,8 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>period counter </p>
 
 </div>
 </div>
@@ -384,6 +410,8 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>scales the duty cycle </p>
+
 </div>
 </div>
 <a id="ac2cc6f385cc583e04c550d2f9cf00143"></a>
@@ -397,6 +425,8 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>number of steps in lut </p>
 
 </div>
 </div>
