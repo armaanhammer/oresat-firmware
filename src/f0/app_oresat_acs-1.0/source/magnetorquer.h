@@ -13,24 +13,23 @@
 
 #define MTQR_PWM_PERIOD MTQR_PWM_TIMER_FREQ/MTQR_PWM_FREQ
 
-#define PWM_CH_MTQR      			0   /// pwm channel
-#define MTQR_STARTING_DC			5000		/// starting duty cycle
-#define PH				 						9u	/// Phase (motor direction)
+#define PWM_CH_MTQR      			0   	/// pwm channel
+#define MTQR_STARTING_DC			5000u	/// starting duty cycle
+#define PH				 						9u		/// Phase (motor direction)
 #define ENABLE    						GPIOB_EN_MAG	/// Chip enable
 
 #define EXIT_SUCCESS 					0
 #define EXIT_FAILURE 					1
 
 /**
- *
- *
+ * @brief PWMConfig structure for the magnetorquer
  *
  */
 static const PWMConfig pwm_MTQRcfg = {
-	MTQR_PWM_TIMER_FREQ,    // Frequency
-	MTQR_PWM_PERIOD,        // period duration 
-	NULL,               		// Callback
-	{ // Channels
+	MTQR_PWM_TIMER_FREQ,    /// Frequency
+	MTQR_PWM_PERIOD,        /// period duration 
+	NULL,               		/// Callback
+	{ /// Channels
 		{PWM_OUTPUT_ACTIVE_HIGH,NULL},
 		{PWM_OUTPUT_DISABLED,NULL},
 		{PWM_OUTPUT_DISABLED,NULL},
@@ -42,8 +41,9 @@ static const PWMConfig pwm_MTQRcfg = {
 };
 
 /**
- *
- *
+ * @brief MTQR structure for keeping state
+ * TODO: this structure is not being used effectively
+ * it may or may not be a good design choice
  *
  */
 typedef struct{

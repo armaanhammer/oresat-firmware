@@ -4,7 +4,7 @@
 bldc *motor;
 
 /**
- *
+ * @brief Currently not used.
  *
  *
  */
@@ -14,11 +14,12 @@ static void adcerrorcallback(ADCDriver *adcp, adcerror_t err) {
 }
 
 
-// TODO, combine this a timer to not spam interrupts so much?
-/*
- * ADC conversion group.
- * Mode:        Continuous, 8 samples of 1 channel, SW triggered.
+/**
+ * TODO, combine this with a timer to not spam interrupts so much?
+ * @brief ADC conversion group, used to configure the ADC driver
+ * Mode:        Continuous, 1 sample of 1 channel, SW triggered.
  * Channels:    A0 
+ * Slowest sample rate possible, as putting it too high can lock other systems out.
  */
 static const ADCConversionGroup adcgrpcfg = {
     TRUE,
@@ -32,8 +33,11 @@ static const ADCConversionGroup adcgrpcfg = {
 };
 
 /**
+ * @brief Translates encoder position into a useable LUT value
  *
- *
+ * Since it takes 6 passes through the LUT to get one physical
+ * revolution of the motor, we need a way to index a value
+ * of 0 - 2^14 into a value of 0 - 360, in 6 separate ranges
  *
  */
 static uint16_t encoderToLut(uint16_t position){
@@ -45,8 +49,7 @@ static uint16_t encoderToLut(uint16_t position){
 }
 
 /**
- *
- *
+ * @brief Handles the SPI transaction, getting the position from the encoder
  *
  */
 THD_WORKING_AREA(wa_spiThread,THREAD_SIZE);
@@ -73,18 +76,27 @@ THD_FUNCTION(spiThread,arg){
 	spiStop(&SPID1);          // Stop driver.
 }
 
+/**
+ * @brief Scales the duty ccycle value from LUT 0 - 100%
+ *
+ */
 static sinctrl_t scale(sinctrl_t duty_cycle){
 	return ((duty_cycle*motor->scale)/100) + ((10000*(motor->scale/2))/100);	
 }
 
 /**
+ * @brief Periodic callback of the PWM driver
  *
- *
+ * At the end of each period, we call this, and go to the next 
+ * step in the LUT, which changes absed off of closed or open
+ * loop control. Holds the logic for stretching, skipping, and
+ * repeating, to modify the LUT values on the fly.
  *
  */
 static void pwmpcb(PWMDriver *pwmp) {
   (void)pwmp;
   
+  /// If open loop, ignore encoder feedback.
 	if(motor->openLoop){
 		motor->u += motor->skip;
 		motor->v += motor->skip;
@@ -109,6 +121,9 @@ static void pwmpcb(PWMDriver *pwmp) {
 			motor->next_sin_v = motor->sinctrl[motor->v+1];
 			motor->next_sin_w = motor->sinctrl[motor->w+1];
 
+			/// Calculate the difference between the current step in the LUT
+			/// and the next step in the LUT, and break it up
+			/// into the desired amount of steps in between the two
 			motor->sin_diff = (motor->current_sin_u > motor->next_sin_u)?
 												(motor->current_sin_u - motor->next_sin_u) : 
 												(motor->next_sin_u - motor->current_sin_u);
@@ -129,8 +144,15 @@ static void pwmpcb(PWMDriver *pwmp) {
 }
 
 /**
+ * @brief Pwm driver configuration structure.
+ * 
+ * PWM_TIMER_FREQ is our timer clock in Hz
  *
+ * PWM_PERIOD period in ticks
  *
+ * Configured with pwmpcb as the periodic callback
+ * PWM channels 0,1,2 are all active high, with a complementary output
+ * and no channel callback
  *
  */
 static PWMConfig pwmRWcfg = {
@@ -149,17 +171,16 @@ static PWMConfig pwmRWcfg = {
 };
 
 /**
- *
- *
+ * @brief Sets up initial values for the BLDC object
  *
  */
 extern void bldcInit(bldc *pbldc){
 	motor = pbldc;
 	motor->steps = STEPS;
 	motor->stretch = STRETCH;
-  motor->stretch_count = 0;
+  	motor->stretch_count = 0;
 	motor->scale = SCALE;
-  motor->skip = SKIP;
+  	motor->skip = SKIP;
 	motor->sinctrl = sinctrl360;
 	motor->count = 0;
 	motor->position = 0;
@@ -183,8 +204,7 @@ extern void bldcInit(bldc *pbldc){
 }
 
 /**
- *
- *
+ * @brief Enables the three PWM channels, starting to go through the LUT
  *
  */
 extern void bldcStart(bldc *pbldc){
@@ -201,8 +221,7 @@ extern void bldcStart(bldc *pbldc){
 }
 
 /**
- *
- *
+ * @brief Stops BLDC control
  *
  */
 extern void bldcStop(bldc *pbldc){
@@ -218,8 +237,7 @@ extern void bldcStop(bldc *pbldc){
 }
 
 /**
- *
- *
+ * @brief Changes duty cycle for a given channel
  *
  */
 extern void bldcSetDC(uint8_t channel,uint16_t dc){
@@ -231,8 +249,7 @@ extern void bldcSetDC(uint8_t channel,uint16_t dc){
 }
 
 /**
- *
- *
+ * @ brief Tear down drivers in a sane way.
  *
  */
 extern void bldcExit(bldc *pbldc){

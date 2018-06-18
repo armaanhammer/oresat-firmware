@@ -33,25 +33,24 @@ static SerialConfig ser_cfg ={
 };
 
 /**
- * Application initialization section
- *
+ * @brief Application initialization section
  *
  */
 static void app_init(void) {
 	acsInit(&acs);
 
-	// initialization of CAN resources for sending and
-	// receiving. registers two 8-byte uint8_t arrays
-	// with the CAN bus. these are shared resources
-	// between the ACS and the CAN bus
+	/// initialization of CAN resources for sending and
+	/// receiving. registers two 8-byte uint8_t arrays
+	/// with the CAN bus. these are shared resources
+	/// between the ACS and the CAN bus
 	canRPDOObjectInit(CAN_PDO_1,CAN_ID_DEFAULT,CAN_BUF_SIZE,acs.can_buf.recv);
 	canTPDOObjectInit(CAN_PDO_1,CAN_ID_DEFAULT,0,0,CAN_BUF_SIZE,acs.can_buf.send);
-	// serial output for debugging
+	/// serial output for debugging
 	sdStart(&SD2, &ser_cfg);
 }
 
 /**
- * main appliction section:
+ * @brief main appliction section
  *
  * starts the acs thread and then sleeps
  *
@@ -71,7 +70,7 @@ static void app_main(void) {
 }
 
 /**
- * main:
+ * @brief main
  *
  * calls initialization functions
  * and then calls app_main()
@@ -82,7 +81,7 @@ int main(void){
 	chSysInit();
 	oresat_init(CAN_NODE);
 
-	// Initialize and start app
+	/// Initialize and start app
 	app_init();
 	app_main();
 
