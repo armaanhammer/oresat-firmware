@@ -959,10 +959,9 @@ IMAGE_PATH             =
     #I found voodoo at: https://stackoverflow.com/questions/8535635/can-doxygen-easily-be-configured-to-recognise-todo-and-fixme-lines
     #It is modified to target /// TODO instead of // TODO
     #INPUT_FILTER = "sed -e 's/\/\/\/.*TODO/\/\/\/ \\todo/'"
-    INPUT_FILTER = "sed -e 's/TODO/\\todo/'"
+    #INPUT_FILTER = "sed -e 's/TODO|TODO\:/\\todo/'" #catch TODO and TODO:
 
-#INPUT_FILTER = "sed -e 's/TODO|TODO\:/\\todo/'" #catch TODO and TODO:
-
+INPUT_FILTER = "sed -e 's/TODO/\\todo/'"
 
 # The FILTER_PATTERNS tag can be used to specify filters on a per file pattern
 # basis. Doxygen will compare the file name with each pattern and apply the
