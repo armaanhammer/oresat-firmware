@@ -79,7 +79,7 @@ static void app_main(void) {
 int main(void){
 	halInit();
 	chSysInit();
-	oresat_init(CAN_NODE);
+	oresat_init(CAN_NODE);	// what is this for?
 
 	/// Initialize and start app
 	app_init();
