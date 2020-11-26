@@ -57,11 +57,11 @@ static void app_init(void) {
  */
 static void app_main(void) {
 	chThdCreateStatic(
-		wa_acsThread,
-		sizeof(wa_acsThread), 
-		NORMALPRIO+1, 
-		acsThread, 
-		&acs	
+		wa_acsThread,		// pointer to a working area dedicated to the thread stack
+		sizeof(wa_acsThread), 	// 
+		NORMALPRIO+1, 		// the priority level for the new thread 
+		acsThread, 		// the thread function 
+		&acs			// an argument passed to the thread function. It can be NULL
 	);
 
 	while (true){
