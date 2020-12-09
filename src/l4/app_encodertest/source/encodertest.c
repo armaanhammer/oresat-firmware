@@ -32,17 +32,17 @@ THD_FUNCTION(spiThread,arg){
   spiAcquireBus(&SPID1);                // Gain ownership of bus.
 
   while (!chThdShouldTerminateX()) {
-	motor->spi_rxbuf[0] = 0;
+	//motor->spi_rxbuf[0] = 0;
 	spiSelect(&SPID1);              // Select slave.
 
 	while(SPID1.state != SPI_READY) {}   
-	spiReceive(&SPID1,1,motor->spi_rxbuf);  // Receive 1 frame (16 bits).
+	//spiReceive(&SPID1,1,motor->spi_rxbuf);  // Receive 1 frame (16 bits).
 	spiUnselect(&SPID1);                	// Unselect slave.
 
 	/// TODO: figure out what this does. assume that 0x3FFF is an offset, 
 	/// possibly to account for algular misalightment between the encoder 
 	/// and motor top dead center?
-	motor->position = 0x3FFF & motor->spi_rxbuf[0];
+	//motor->position = 0x3FFF & motor->spi_rxbuf[0];
 	
   }
 

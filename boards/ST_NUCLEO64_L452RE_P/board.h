@@ -79,10 +79,13 @@
 #define GPIOA_LPUART1_RX            3U
 #define GPIOA_PIN4                  4U
 #define GPIOA_SMPS_EN               4U
+#define GPIOA_SPI1_NSS              4U
 #define GPIOA_PIN5                  5U
 #define GPIOA_SMPS_V1               5U
+#define GPIOA_SPI1_SCK              5U
 #define GPIOA_PIN6                  6U
 #define GPIOA_SMPS_PG               6U
+#define GPIOA_SPI1_MISO             6U
 #define GPIOA_PIN7                  7U
 #define GPIOA_SMPS_SW               7U
 #define GPIOA_PIN8                  8U

@@ -37,7 +37,7 @@ static void app_init(void)
 {
     /* App initialization */
     // true means critical worker, so it will start regardless of the system state
-    init_worker(&worker1, "Example blinky thread", blink_wa, sizeof(blink_wa), NORMALPRIO, blink, NULL, true); 
+    init_worker(&worker1, "Example blinky thread", wa_spiThread, sizeof(wa_spiThread), NORMALPRIO, spiThread, NULL, true); 
     reg_worker(&worker1);
 
     /* Start up debug output */
@@ -49,6 +49,11 @@ static void app_init(void)
  */
 int main(void)
 {
+	// inits from ACS-1.0
+	halInit();
+	chSysInit();
+    
+    
     // Initialize and start
     oresat_init();
     app_init();
