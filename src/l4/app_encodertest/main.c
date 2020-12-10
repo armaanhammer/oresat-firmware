@@ -52,6 +52,10 @@ int main(void)
 	// inits from ACS-1.0
 	halInit();
 	chSysInit();
+
+	// create motor instance of struct bldc to faciliate SPI
+	bldc motor;
+
     
     
     // Initialize and start
